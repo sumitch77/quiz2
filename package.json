@@ -1,0 +1,22 @@
+{
+  "name": "quiz1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "setTest.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon setTest2.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "dependencies": {
+    "ejs": "^5.0.1",
+    "express": "^5.2.1",
+    "mysql2": "^3.19.1"
+  }
+}

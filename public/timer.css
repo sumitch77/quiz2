@@ -1,0 +1,140 @@
+:root {
+  --primary: #2ecc71;
+  --primary-hover: #27ae60;
+  --text-dark: #2c3e50;
+  --accent-red: #e74c3c;
+  --bg-light: #f4f7f6;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#edit{
+  width:50px;
+  position:relative;
+  top:0px;
+  left:300px;
+  
+}
+
+
+#intro {
+  text-align: center;
+  
+  font-size: 2.5rem;
+  color: #00ced1;
+  margin-top: 2rem;
+  font-size: 40px;
+}
+
+ul {
+  background: white;
+  padding: 20px 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  color: var(--accent-red);
+  list-style: none;
+  max-width: 800px;
+  font-size: 40px;
+}
+
+li {
+  margin: 10px 0;
+  font-weight: 600;
+}
+
+/* Timer Styling */
+#timer {
+  margin: 20px 0;
+}
+
+#flexb {
+  display: flex;
+  gap: 10px;
+}
+
+#hour, #min, #sec {
+  background: white;
+  border: 2px solid var(--accent-red);
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  min-width: 40px;
+  text-align: center;
+}
+
+
+#start, #submit, #res,#replay {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+#start:hover, #submit:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+
+#hide {
+  display: none; 
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  margin-bottom: 50px;
+}
+
+p {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 25px;
+  color: #34495e;
+  font-size: 35px;
+}
+
+
+label {
+  display: block;
+  background: #f8f9fa;
+  margin: 8px 0;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 30px;
+}
+
+label:hover {
+  background: #e9ecef;
+}
+
+input[type="radio"] {
+  margin-right: 12px;
+  accent-color: var(--primary);
+  transform: scale(1.2);
+}
+
+#ans {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 20px;
+  color: var(--primary);
+  margin-bottom: 50px;
+}
