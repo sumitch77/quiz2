@@ -5,7 +5,7 @@
   "main": "setTest.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon setTest2.js"
+    "start": "node setTest2.js"
   },
   "keywords": [],
   "author": "",
