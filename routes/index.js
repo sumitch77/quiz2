@@ -1,6 +1,7 @@
 const express = require('express'); 
 const path = require('path');
 const router = express.Router();
+const nodemailer = require('nodemailer');
 const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -26,9 +27,52 @@ if (!db) {
 };
 
 
+
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+ 
+  auth: {
+    user: process.env.EMAIL_USER,  
+    pass: process.env.EMAIL_PASS   
+  },
+  connectionTimeout: 5000,
+  socketTimeout: 5000
+});
+router.get('/verify', (req, res) => {
+  res.sendFile(path.join(__dirname, '../views/abc.html'));
+});
+router.post('/verify', async (req, res) => {
+  
+  const { email } = req.body;
+  const verificationCode = Math.floor(100000 + Math.random() * 900000);
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Your Verification Code',
+    text: `Your 6-digit verification code is: ${verificationCode}. It expires in 5 minutes.`
+  };
+
+  console.log('Mail options:', mailOptions);
+
+  try {
+    
+    const info = await transporter.sendMail(mailOptions);
+    res.json({ success: true, code: verificationCode, message: 'Email sent' });
+ 
+} catch (error) {
+    console.log('Email error:', error);
+    
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+
 router.get('/', (req, res, next) => {
     res.sendFile(path.join(__dirname, '../views/index.html'));
 });
+
 
 router.get('/list', async (req, res, next) => {
     try {
