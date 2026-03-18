@@ -12,6 +12,7 @@ let verificationCode;
 const dns = require("dns");
 const e = require('express');
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
+dns.setDefaultResultOrder('ipv4first');
 const MongoConnect=(callback)=>{
     MongoClient.connect(process.env.url).then((client)=>{
         db = client.db('quiz');
@@ -34,8 +35,8 @@ if (!db) {
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false,
   auth: {
     user: process.env.EMAIL_USER,  
     pass: process.env.EMAIL_PASS   
@@ -44,8 +45,8 @@ const transporter = nodemailer.createTransport({
     rejectUnauthorized: false,
     },
     family: 4,
-  connectionTimeout: 5000,
-  socketTimeout: 5000
+  connectionTimeout: 10000,
+  socketTimeout: 10000
 });
 router.get('/verify', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/abc.html'));
