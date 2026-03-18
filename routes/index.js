@@ -1,18 +1,18 @@
 const express = require('express'); 
 const path = require('path');
 const router = express.Router();
-const nodemailer = require('nodemailer');
 const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
 dotenv.config();
+const { Resend } = require('resend');
+const resend = new Resend(process.env.EMAIL_PASS);
 let db;
 let verificationCodes= new Map();
 let verificationCode;
 
 const dns = require("dns");
-const e = require('express');
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
-dns.setDefaultResultOrder('ipv4first');
+//dns.setDefaultResultOrder('ipv4first');
 const MongoConnect=(callback)=>{
     MongoClient.connect(process.env.url).then((client)=>{
         db = client.db('quiz');
@@ -30,24 +30,6 @@ if (!db) {
     return db;
 };
 
-
-
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,  
-    pass: process.env.EMAIL_PASS   
-  },
-  tls: {
-    rejectUnauthorized: false,
-    },
-    family: 4,
-  connectionTimeout: 10000,
-  socketTimeout: 10000
-});
 router.get('/verify', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/abc.html'));
 });
@@ -61,23 +43,17 @@ setTimeout(() =>
  5 * 60 * 1000);
 
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: 'Your Verification Code',
-    text: `Your 6-digit verification code is: ${verificationCode}. It expires in 5 minutes.`
-  };
-
-
   try {
-    const info = await transporter.sendMail(mailOptions);
+    await resend.emails.send({
+      from: 'onboarding@resend.dev',
+      to: email,
+      subject: 'Your Verification Code',
+      text: `Your 6-digit verification code is: ${verificationCode}. It expires in 5 minutes.`
+    });
     res.json({ success: true, message: 'Email sent' });
- 
-} catch (error) {
+  } catch (error) {
     console.log('Email error:', error);
-     
-    
-    res.status(500).json({ success: false, message: 'Failed to send email',error: error.message+"he"+error.code+"he"+error.response });
+    res.status(500).json({ success: false, message: 'Failed to send email', error: error.message });
   }
 });
 
