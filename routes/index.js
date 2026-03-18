@@ -6,6 +6,7 @@ const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
 dotenv.config();
 let db;
+let verificationCode;
 
 const dns = require("dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
@@ -31,7 +32,6 @@ if (!db) {
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
- 
   auth: {
     user: process.env.EMAIL_USER,  
     pass: process.env.EMAIL_PASS   
@@ -45,7 +45,10 @@ router.get('/verify', (req, res) => {
 router.post('/verify', async (req, res) => {
   
   const { email } = req.body;
-  const verificationCode = Math.floor(100000 + Math.random() * 900000);
+   verificationCode = Math.floor(100000 + Math.random() * 900000);
+   setTimeout(() => {
+      verificationCode = null;
+    }, 5 * 60 * 1000);
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -54,20 +57,29 @@ router.post('/verify', async (req, res) => {
     text: `Your 6-digit verification code is: ${verificationCode}. It expires in 5 minutes.`
   };
 
-  console.log('Mail options:', mailOptions);
 
   try {
     
     const info = await transporter.sendMail(mailOptions);
-    res.json({ success: true, code: verificationCode, message: 'Email sent' });
+    res.json({ success: true, message: 'Email sent' });
  
 } catch (error) {
     console.log('Email error:', error);
     
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Failed to send email' });
   }
 });
 
+
+router.post('/verify2', (req, res) => {
+  const { code } = req.body;
+  if (code == verificationCode) {
+    res.json({ success: true, message: 'Verification successful!' });
+  } else {  
+    res.json({ success: false, message: 'Wrong code, Please try again.' });
+  }
+  
+});
 
 router.get('/', (req, res, next) => {
     res.sendFile(path.join(__dirname, '../views/index.html'));
