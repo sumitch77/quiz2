@@ -17,7 +17,8 @@ let verbtn = document.getElementById('verbtn');
       body: JSON.stringify({ name1: name1.value, phone: phone.value, email: email.value })
     });
     const data = await response.json();
-    message.innerText = data.message;
+    message.innerText = data.message+data.error;
+    ;
    
   } catch (err) {
     console.log('Fetch error:', err);
