@@ -18,7 +18,6 @@ let verbtn = document.getElementById('verbtn');
     });
     const data = await response.json();
     message.innerText = data.message;
-  
    
   } catch (err) {
     console.log('Fetch error:', err);

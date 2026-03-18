@@ -9,6 +9,7 @@ let db;
 let verificationCode;
 
 const dns = require("dns");
+const e = require('express');
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 const MongoConnect=(callback)=>{
     MongoClient.connect(process.env.url).then((client)=>{
@@ -32,13 +33,16 @@ if (!db) {
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+    port: 465,
+    secure: true,
 
   auth: {
     user: process.env.EMAIL_USER,  
     pass: process.env.EMAIL_PASS   
   },
+  tls: {
+    rejectUnauthorized: false,
+    },
   connectionTimeout: 5000,
   socketTimeout: 5000
 });
@@ -68,7 +72,7 @@ router.post('/verify', async (req, res) => {
 } catch (error) {
     console.log('Email error:', error);
     
-    res.status(500).json({ success: false, message: 'Failed to send email' });
+    res.status(500).json({ success: false, message: 'Failed to send email',error: error.message });
   }
 });
 
