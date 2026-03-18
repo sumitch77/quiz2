@@ -30,7 +30,7 @@ verbtn.addEventListener('click', async () => {
     const response = await fetch('/verify2', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({code: code.value })
+      body: JSON.stringify({code: code.value , email: email.value})
     });
     const data = await response.json();
     message.innerText = data.message;
