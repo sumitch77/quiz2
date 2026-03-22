@@ -1,73 +1,23 @@
 const express = require('express'); 
 const path = require('path');
 const router = express.Router();
-const { MongoClient } = require('mongodb');
+const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
-const { Resend } = require('resend');
-const resend = new Resend(process.env.EMAIL_PASS);
-let db;
-let verificationCodes= new Map();
-let verificationCode;
 
 const dns = require("dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 //dns.setDefaultResultOrder('ipv4first');
-const MongoConnect=(callback)=>{
-    MongoClient.connect(process.env.url).then((client)=>{
-        db = client.db('quiz');
-        callback();
-    }).catch((err)=>{
-        console.error('Error connecting to MongoDB:', err);
-        
-    });
-};
-
-const newdb=()=>{
-if (!db) {
-    throw new Error('Database connection not established');
-}   
-    return db;
-};
-
-router.get('/verify', (req, res) => {
-  res.sendFile(path.join(__dirname, '../views/abc.html'));
+const questionSchema = new mongoose.Schema({
+    q1:{ type: String , required: true }, 
+    q2: String,
+    q3: String,
+    q4: String,
+    q5: String,
 });
-router.post('/verify', async (req, res) => {
-  
-  const { email } = req.body;
-   verificationCode = Math.floor(100000 + Math.random() * 900000);
-  verificationCodes.set(email, verificationCode);
-setTimeout(() =>
-   verificationCodes.delete(email),
- 5 * 60 * 1000);
+const Question = mongoose.model('Question', questionSchema);
 
 
-  try {
-    await resend.emails.send({
-      from: 'onboarding@resend.dev',
-      to: email,
-      subject: 'Your Verification Code',
-      text: `Your 6-digit verification code is: ${verificationCode}. It expires in 5 minutes.`
-    });
-    res.json({ success: true, message: 'Email sent' });
-  } catch (error) {
-    console.log('Email error:', error);
-    res.status(500).json({ success: false, message: 'Failed to send email', error: error.message });
-  }
-});
-
-
-router.post('/verify2', (req, res) => {
-  const { code, email } = req.body; 
-  const stored = verificationCodes.get(email);
-  if (code == stored) {
-    res.json({ success: true, message: 'Verification successful!' });
-  } else {  
-    res.json({ success: false, message: 'Wrong code, Please try again.' });
-  }
-  
-});
 
 router.get('/', (req, res, next) => {
     res.sendFile(path.join(__dirname, '../views/index.html'));
@@ -77,14 +27,23 @@ router.get('/', (req, res, next) => {
 router.get('/list', async (req, res, next) => {
     try {
 
-      const db = newdb();
-     const result = await db.collection('questions').find().toArray();
-            res.render('list', { questions: result });
+      Question.find({}, (err, questions) => {
+        if (err) {
+          console.error('Error fetching questions:', err);
+          res.status(500).send('<h1>Error fetching questions from database</h1>');
+        }
+        else {
+          res.render('list', { questions });
+        }
 
-    } catch (err) {
-        console.error('Error fetching data:', err);
-        res.status(500).send('<h1>Error fetching data</h1>');
+      });
     }
+    catch (err) {
+      console.error('Error fetching questions:', err);
+      res.status(500).send('<h1>Error fetching questions from database</h1>');
+    }
+
+
 });
 
 
@@ -95,20 +54,17 @@ router.post('/index', async(req, res) => {
    
     const { q1, q2, q3, q4, q5 } = req.body;
     try {
-        const db = newdb();
-        await db.collection('questions').insertOne({ q1, q2, q3, q4, q5 }
-        );
-    
-        res.redirect('/index');
+        const newQuestion = new Question({ q1, q2, q3, q4, q5 });
+        await newQuestion.save();
+        res.json({ success: true, message: 'Question saved successfully!' });
+        res.redirect('/list');
     } catch (err) {
-        console.error('Error inserting data:', err);
-        res.status(500).send('<h1>Error inserting data into database</h1>');
-    }
+        console.error('Error saving question:', err);
+        res.status(500).json({ success: false, message: 'Failed to save question', error: err.message });
+    } 
 });
 module.exports = {
-    router,
-    MongoConnect,
-    newdb,
+    router
 };
 
 
