@@ -4,19 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup</title>
+    <link rel="stylesheet" href="signup.css">
 </head>
 <body>
-    <h1 id="head">Enter Your Details</h1>
+    <h1 id="head">Register</h1>
+    <br><br>
     <form id="form">
-        <input id="name" type="text" placeholder="Enter your name" required>
-        <br><br>
-        <input id="phone" type="text" placeholder="Enter your phone number" required>
-        <br><br>
-        <input id="email" type="email" placeholder="Enter your email" required>
-        <br><br>
-        <input id="password" type="password" placeholder="Create password" required>
-        <br><br>
-        <input id="confirmpass" type="password" placeholder="Confirm your password" required>
+
+<input type="text" name="name1" id="name1" autocomplete="name" placeholder="Enter your name">
+<br><br>
+<input type="tel" name="phone" id="phone" autocomplete="tel" placeholder="Phone Number">
+<br><br>
+<input type="email" name="email" id="email" autocomplete="email" placeholder="Email Address">
+<br><br>
+<input type="password" name="password" id="password" autocomplete="new-password" placeholder="Password">
+<br><br>
+<input type="password" name="confirmpass" id="confirmpass" autocomplete="new-password" placeholder="Confirm Password">
+       <br><br> 
         <button type="submit" id="sendcode">Send Verification Code</button>
         <br><br>
         <input id="code" type="text" placeholder="Enter verification code" required>

@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const dns = require("dns");
+
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 //dns.setDefaultResultOrder('ipv4first');
 const questionSchema = new mongoose.Schema({
@@ -47,12 +48,11 @@ router.get('/list', async (req, res, next) => {
 });
 
 
-router.get('/index', (req, res,next) => {
-    res.sendFile(path.join(__dirname, '../views/setTest.html'));
-});
+
 router.post('/index', async(req, res) => {
    
     const { q1, q2, q3, q4, q5 } = req.body;
+   
     try {
         const newQuestion = new Question({ q1, q2, q3, q4, q5 });
         await newQuestion.save();
@@ -62,6 +62,7 @@ router.post('/index', async(req, res) => {
         console.error('Error saving question:', err);
         res.status(500).json({ success: false, message: 'Failed to save question', error: err.message });
     } 
+
 });
 module.exports = {
     router

@@ -12,6 +12,7 @@ let replay = document.querySelector("#replay");
 let edit = document.querySelector("#edit");
 let load = document.querySelector("#load");
 let your = document.querySelector("#your");
+let msg = document.querySelector("#msg");
 
 let qu1 = document.querySelector("#qu1");    
 let qu2 = document.querySelector("#qu2");    
@@ -189,6 +190,7 @@ replay.addEventListener("click",()=>{
   location.reload();
 });
 
-edit.addEventListener("click",()=>{
-  window.location.href = "localhost:3000/index";
+edit.addEventListener("click",async ()=>{
+    window.location.href = '/index';
+
 });
