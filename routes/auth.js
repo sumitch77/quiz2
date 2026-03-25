@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const {Resend} = require('resend');
 const { check , validationResult} = require('express-validator');
+const { link } = require('fs');
 const resendClient = new Resend(process.env.TOKEN);
 let verificationCodes= new Map();
 let verificationCode;
@@ -32,6 +33,16 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
 });
 const User = mongoose.model('user', userSchema);
+
+router2.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).json({ success: false, message: 'An error occurred during logout', error: err.message });
+    }
+    res.clearCookie('connect.sid');
+    res.redirect('/');
+  });
+});
 
   router2.get('/index', (req, res,next) => {
        if(req.session.userId&& req.session.userName){
@@ -95,7 +106,7 @@ setTimeout(() =>
 
   try {
     await resendClient.emails.send({
-      from: 'onboarding@resend.dev',
+      from: 'Sumit@sumit7.website',
       to: email,
       subject: 'Your Verification Code',
       text: `Your 6-digit verification code is: ${verificationCode}. It expires in 5 minutes.`
@@ -123,6 +134,7 @@ router2.post('/verify2', (req, res) => {
   
 });
 
+
 router2.post('/signupco',
   [ check('email')
       .notEmpty().withMessage('Email is required')
@@ -147,7 +159,6 @@ router2.post('/signupco',
   
     
 async (req, res) => {
-  console.log("Data received by server:", req.body);
   const { name1 , phone , email , password, confirmpass } = req.body;
   if(req.session.verified && req.session.verifiedEmail === email) {
     try {
@@ -159,8 +170,12 @@ async (req, res) => {
     res.json({ success: true, message: 'Signup successful!' });
 
     } catch (err) {
-        console.log('Signup error:', err);
-        res.status(500).json({ success: false, message: 'An error occurred during signup', error: err.message });    
+      if(err.code === 11000) {
+        res.status(400).json({ success: false, message: 'Email already exists. Login with existing account', link: '/login', actionText: 'Login' });
+      }
+        else {
+        res.status(500).json({ success: false, message: 'An error occurred during signup', error: err.message }); 
+        }   
     }
   } else {
     res.json({ success: false, message: 'Email not verified. Please verify your email before signing up.' });

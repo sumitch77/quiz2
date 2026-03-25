@@ -21,7 +21,20 @@ const Question = mongoose.model('Question', questionSchema);
 
 
 router.get('/', (req, res, next) => {
+if (!req.session.userId) {
+        return  res.sendFile(path.join(__dirname, '../views/index.html'));
+
+    }
     res.sendFile(path.join(__dirname, '../views/index.html'));
+
+});
+
+router.get('/check', (req, res, next) => {
+  if(req.session.userId && req.session.userName) {
+    res.json({ loggedIn: true, userName: req.session.userName });
+  } else {
+    res.json({ loggedIn: false });
+  }
 });
 
 
@@ -57,7 +70,7 @@ router.post('/index', async(req, res) => {
         const newQuestion = new Question({ q1, q2, q3, q4, q5 });
         await newQuestion.save();
         res.json({ success: true, message: 'Question saved successfully!' });
-        res.redirect('/list');
+        
     } catch (err) {
         console.error('Error saving question:', err);
         res.status(500).json({ success: false, message: 'Failed to save question', error: err.message });

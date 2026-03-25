@@ -22,7 +22,7 @@ let newemail;
       body: JSON.stringify({ name1: name1.value, phone: phone.value, email: newemail, password: password.value, confirmpass: confirmpass.value })
     });
     const data = await response.json();
-    message.innerText =data.message;
+    message.innerHTML =data.message  ;
    
   } catch (err) {
     console.log('Fetch error:', err);
@@ -54,7 +54,7 @@ e.preventDefault();
             body: JSON.stringify({ name1: name1.value, phone: phone.value, email: email.value, password: password.value, confirmpass: confirmpass.value })
         });
         const data = await response.json();
-        message.innerText = data.message;
+        message.innerHTML = data.message + (data.link ? `<a href="${data.link}">${' ' + data.actionText}</a>` : '');
         if (data.success) {
             name1.value = '';
             phone.value = '';
