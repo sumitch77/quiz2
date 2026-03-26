@@ -10,7 +10,8 @@ const { link } = require('fs');
 const resendClient = new Resend(process.env.TOKEN);
 let verCodes = new Map();
 let counts2 = new Map(); 
-const User = require('./auth');
+const{ User} = require('./auth');
+console.log(User);
 
 
 const validate = (req, res, next) => {
@@ -141,12 +142,12 @@ router3.post('/resetpassword',
 const updatedUser = await User.findOneAndUpdate(
             { email: email }, 
             { password: newPassword }, 
-            { new: true } 
+            { returnDocument: 'after'} 
         );
 
         if (updatedUser) {
             req.session.verified2 = false;
-      res.json({ success: true, message: 'Login successful!' });
+      res.json({ success: true, message: 'password reset successful!' });
          }
         }
     } catch (err) {
