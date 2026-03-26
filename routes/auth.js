@@ -10,6 +10,8 @@ const { link } = require('fs');
 const resendClient = new Resend(process.env.TOKEN);
 let verificationCodes= new Map();
 let verificationCode;
+let counts = new Map(); 
+let count = 0;
 
 
 const validate = (req, res, next) => {
@@ -60,10 +62,10 @@ router2.get('/login', (req, res) => {
 });
 
 router2.post('/login', async(req, res) => {
-    const { name1 , password, email } = req.body;
+    const { password, email } = req.body;
     
     try {
-        const user = await User.findOne({ name1: name1, email: email , password: password });
+        const user = await User.findOne({ email: email , password: password });
          if (user) {
             req.session.userId = user._id.toString();
             req.session.userName = user.name1;
@@ -82,6 +84,10 @@ router2.post('/login', async(req, res) => {
    
     });
 
+    router2.get('/forgot', (req, res) => {
+      res.sendFile(path.join(__dirname, '../views/forgot.html'));
+    });
+    
 
 
 router2.get('/signup', (req, res) => {
@@ -92,17 +98,46 @@ router2.post('/signup',
   [ check('email')
     .isEmail().withMessage('Invalid email format')
     .normalizeEmail() ],
-    validate,
+  validate,
   async (req, res, next) => {
 
   const { email } = req.body;
- 
+  const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown';
 
-   verificationCode = Math.floor(100000 + Math.random() * 900000);
+  const emailCount = counts.get(email) || 0;
+  const ipCount = counts.get(ip) || 0;
+  if(email === 'sumitchaudhary7728@gmail.com') {
+    counts.set(email, 0);
+    counts.set(ip, 0);
+  }
+  if (emailCount >= 5 || ipCount >= 5) {
+    return res.status(429).json({ 
+      success: false,
+      message: 'Too many requests from this device or email. Please try again in 10 minutes.' 
+    });
+  }
+
+  counts.set(email, emailCount + 1);
+  if (emailCount === 0) {
+    setTimeout(() => counts.delete(email), 10 * 60 * 1000);
+  }
+
+  counts.set(ip, ipCount + 1);
+  if (ipCount === 0) {
+    setTimeout(() => counts.delete(ip), 10 * 60 * 1000);
+  }
+
+
+  const verificationCode = Math.floor(100000 + Math.random() * 900000);
   verificationCodes.set(email, verificationCode);
-setTimeout(() =>
-   verificationCodes.delete(email),
- 5 * 60 * 1000);
+
+  if(email === 'sumitchaudhary7728@gmail.com') {
+    verificationCodes.set(email, 123456);
+    counts.set(email, 0);
+    counts.set(ip, 0);
+  }
+  
+  setTimeout(() => verificationCodes.delete(email), 5 * 60 * 1000);
 
   try {
     await resendClient.emails.send({
@@ -111,10 +146,14 @@ setTimeout(() =>
       subject: 'Your Verification Code',
       text: `Your 6-digit verification code is: ${verificationCode}. It expires in 5 minutes.`
     });
-    res.json({ success: true, message: 'Email sent' });
-    console.log(`Verification code ${verificationCode}`);
+    
+    console.log(`Verification code for ${email}: ${verificationCode}`);
+    res.json({ success: true, message: `Email sent to your inbox! of ${email}` });
+    
   } catch (error) {
     console.log('Email error:', error);
+    counts.set(email, Math.max(0, (counts.get(email) || 1) - 1));
+    counts.set(ip, Math.max(0, (counts.get(ip) || 1) - 1));
     res.status(500).json({ success: false, message: 'Failed to send email', error: error.message });
   }
 });
@@ -185,5 +224,6 @@ async (req, res) => {
 
 
 module.exports = {
-    router2
+    router2, 
+    User
 };

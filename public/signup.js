@@ -22,7 +22,7 @@ let newemail;
       body: JSON.stringify({ name1: name1.value, phone: phone.value, email: newemail, password: password.value, confirmpass: confirmpass.value })
     });
     const data = await response.json();
-    message.innerHTML =data.message  ;
+    message.innerHTML =data.message;
    
   } catch (err) {
     console.log('Fetch error:', err);

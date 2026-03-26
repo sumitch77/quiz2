@@ -7,15 +7,19 @@
     <link rel="stylesheet" href="abc.css">
 </head>
 <body>
+    <h1 id="head">Login</h1>
+    <br><br>
     <form id="emailForm">
-        <input type="text" id="name" placeholder="Enter Username">
+        <input type="email" id="email" placeholder="Enter your email" required>
         <br><br>
-        <input type="text" id="password" placeholder="Enter your password">
+        <input type="password" id="password" placeholder="Enter your password" required>
         <br><br>
-        <input type="email" id="email" placeholder="Enter your email">
-        <br><br>
+     
         <button id="verbtn">Login</button>
     <br><br>
+    <div id="forgot"><a href="/forgot">Forgot Password?</a></div>
+    <br>
+    <div id="error">Don't have an account? <a href="/signup">Signup here</a></div>
     </form>
     
     <div id="message"></div>

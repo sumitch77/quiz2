@@ -1,4 +1,4 @@
-/* General Reset */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,18 +7,23 @@
 }
 
 body {
-    background-color: #0f172a; /* Deep dark background */
+    background-color: #0f172a; 
     color: #f1f5f9;
     display: flex;
-    flex-direction: column; /* Stacks H1 above the Form */
+    flex-direction: column; 
     justify-content: center;
     align-items: center;
     min-height: 100vh;
 }
+#head {
+    color: #38bdf8; 
+    margin-bottom: 20px;
+    font-size: 2rem;
+    text-align: center;
+}
 
-/* Form Container */
 #form {
-    background-color: #1e293b; /* Dark slate card */
+    background-color: #1e293b; 
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -38,14 +43,14 @@ input {
     transition: all 0.3s ease;
 }
 
-/* The Glow Effect when typing */
+
 input:focus {
     outline: none;
     border-color: #38bdf8; /* Bright Blue */
     box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
 }
 
-/* Login Button */
+
 #verbtn {
     width: 100%;
     padding: 12px;
@@ -69,7 +74,6 @@ input:focus {
     transform: translateY(0);
 }
 
-/* Message Area */
 #message {
     margin-top: 1rem;
     color: #94a3b8;

@@ -8,6 +8,7 @@ const session = require('express-session');
 const mongostore = require('connect-mongodb-session')(session);
 const dotenv = require('dotenv');
 const { router2 } = require('./routes/auth');
+const router3 = require('./routes/routeforgot');
 dotenv.config();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -27,6 +28,7 @@ app.use(session({
 
 app.use(router);
 app.use(router2);
+app.use(router3);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
     res.status(404).send('<h1>404 Page Not Found</h1>');
