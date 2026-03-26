@@ -114,7 +114,7 @@ router3.post('/resetpassword', async (req, res) => {
     const min = 5*60*1000;
     const isExpired = Date.now() - req.session.verifiedAt > min;
 
-    if(req.session.verified === false || req.session.veremail === email || isExpired){
+    if(req.session.verified === false || req.session.veremail !== email || isExpired){
         req.session.verified = false;
         req.session.verifiedEmail = null;
         return res.json({success: false, message: 'Email not verified Please try again.' });
