@@ -2,12 +2,13 @@ let email = document.getElementById('email');
 let sendcode = document.getElementById('sendcode');
 let code = document.getElementById('code');
 let verbtn = document.getElementById('verbtn');
-let newpassword = document.getElementById('newpassword');
-let confirmpassword = document.getElementById('confirmpassword');
+let newPassword = document.getElementById('newPassword');
+let confirmPassword = document.getElementById('confirmPass');
 let resetbtn = document.getElementById('resetbtn');
 let message = document.getElementById('message');
 
-sendcode.addEventListener('click', async () => {
+sendcode.addEventListener('click', async (e) => {
+    e.preventDefault();
     const emailValue = email.value.trim();
     try {
     const response = await fetch('/forgot', {
@@ -26,7 +27,8 @@ sendcode.addEventListener('click', async () => {
 }
 });
 
-verbtn.addEventListener('click', async () => {
+verbtn.addEventListener('click', async (e) => {
+    e.preventDefault();
     const emailValue = email.value.trim();
     const codeValue = code.value.trim();
     try {
@@ -47,19 +49,16 @@ verbtn.addEventListener('click', async () => {
 }
 });
 
-resetbtn.addEventListener('click', async () => {
+resetbtn.addEventListener('click', async (e) => {
+e.preventDefault();
      const emailValue = email.value.trim();
-    const newPasswordValue = newpassword.value.trim();
-    const confirmPasswordValue = confirmpassword.value.trim();
-    if (newPasswordValue !== confirmPasswordValue) {
-        message.innerHTML = 'Passwords do not match.';
-        return;
-    }
+    const newPasswordValue = newPassword.value.trim();
+    const confirmPasswordValue = confirmPassword.value.trim();
     try {
     const response = await fetch('/resetpassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newPassword: newPasswordValue , email: emailValue })
+        body: JSON.stringify({ newPassword: newPasswordValue , confirmPasswordValue: confirmPasswordValue, email: emailValue })
     });
     const data = await response.json();
     if (data.success) {

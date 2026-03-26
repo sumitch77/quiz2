@@ -1,5 +1,4 @@
 
-let name1 = document.getElementById('name');
 let password = document.getElementById('password');
 let email = document.getElementById('email');
 let message = document.getElementById('message');
@@ -13,7 +12,7 @@ let verbtn = document.getElementById('verbtn');
     const response = await fetch('/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name1: name1.value, password: password.value, email: email.value })
+      body: JSON.stringify({ password: password.value, email: email.value })
     });
     const data = await response.json();
     message.innerText = data.message;

@@ -27,7 +27,7 @@ const validate = (req, res, next) => {
 };
 
 router3.get('/forgot', (req, res) => {
-    req.session.verified = false;
+    req.session.verified2 = false;
     res.sendFile(path.join(__dirname, '../views/forgot.html'));
 });
 
@@ -100,7 +100,7 @@ router3.post('/forgotverify', async (req, res) => {
     const { email, code } = req.body;
     const storedCode = verCodes.get(email);
     if (code == storedCode) {
-        req.session.verified = true;
+        req.session.verified2 = true;
         req.session.veremail = email;
         req.session.verifiedAt = Date.now();
         return res.json({ success: true, message: 'Code verified. You can now reset your password.' });
@@ -109,13 +109,28 @@ router3.post('/forgotverify', async (req, res) => {
     }
 });
 
-router3.post('/resetpassword', async (req, res) => {
-    const { newPassword , email} = req.body;
+router3.post('/resetpassword',
+   [ check('email')
+        .isEmail().withMessage('Invalid email format')
+        .normalizeEmail() ,
+     check('newPassword').notEmpty().withMessage('Password is required')
+    .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+     check('confirmPasswordValue')
+    .custom((value, { req }) => {
+      if (value !== req.body.newPassword) {
+        throw new Error('Passwords do not match');
+      }
+      return true;
+    })
+  ],validate,
+
+  async (req, res) => {
+    const { newPassword , confirmPasswordValue, email} = req.body;
     const min = 5*60*1000;
     const isExpired = Date.now() - req.session.verifiedAt > min;
 
-    if(req.session.verified === false || req.session.veremail !== email || isExpired){
-        req.session.verified = false;
+    if(req.session.verified2 === false || req.session.veremail !== email || isExpired){
+        req.session.verified2 = false;
         req.session.verifiedEmail = null;
         return res.json({success: false, message: 'Email not verified Please try again.' });
     }else{
@@ -130,7 +145,7 @@ const updatedUser = await User.findOneAndUpdate(
         );
 
         if (updatedUser) {
-            req.session.verified = false;
+            req.session.verified2 = false;
       res.json({ success: true, message: 'Login successful!' });
          }
         }
@@ -138,6 +153,9 @@ const updatedUser = await User.findOneAndUpdate(
       if(err.code === 11000) {
         res.status(400).json({ success: false, message: 'Email already exists. Login with existing account', link: '/login', actionText: 'Login' });
       }
+      res.status(400).json({ success: false, message: 'Some error occured , Try again after 10 minutes.' });
+      
+
     }
 
     }

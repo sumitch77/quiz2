@@ -163,8 +163,9 @@ router2.post('/verify2', (req, res) => {
   const {code, email} = req.body; 
   const stored = verificationCodes.get(email);
   if (code == stored) {
-    req.session.verified = true;
+req.session.verified = true;
     req.session.verifiedEmail = email;
+
     res.json({ success: true, message: 'Verification successful!' });
     
   } else {  
@@ -204,7 +205,7 @@ async (req, res) => {
   const newUser = new User({ name1, phone, email, password });
             await newUser.save();
             req.session.verified = false;
-             req.session.userId = newUser._id;
+             req.session.userId = newUser._id.toString();
             req.session.userName = newUser.name1;
     res.json({ success: true, message: 'Signup successful!' });
 
