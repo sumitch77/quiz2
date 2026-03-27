@@ -46,14 +46,15 @@ function startCountdown(unlockTime) {
        if(response.status===429){
         const data = await response.json();
         message.innerText = data.message;
+        let unlockTime;
           if(data.total === 600){
-        const unlockTime = Date.now() + 600000; 
+        unlockTime = Date.now() + 600000; 
         }
          if(data.total === 60){
-        const unlockTime = Date.now() + 60000; 
+         unlockTime = Date.now() + 60000; 
         }
          if(data.total === 5){
-        const unlockTime = Date.now() + 5000; 
+         unlockTime = Date.now() + 5000; 
         }
         localStorage.setItem('resendUnlock', unlockTime);
          startCountdown(unlockTime);
