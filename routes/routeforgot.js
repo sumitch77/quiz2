@@ -1,38 +1,23 @@
 const express = require('express'); 
 const path = require('path');
 const router3 = express.Router();
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
 const {Resend} = require('resend');
-const { check , validationResult} = require('express-validator');
-const { link } = require('fs');
 const resendClient = new Resend(process.env.TOKEN);
 let verCodes = new Map();
-let counts2 = new Map(); 
 const{ User} = require('./auth');
+const { check} = require('express-validator');
+
 console.log(User);
-
-
-const validate = (req, res, next) => {
-  const errors = validationResult(req);
-  if (errors.isEmpty()) {
-    return next();
-  }
-  const extractedError = errors.array()[0].msg;
-  
-  return res.status(400).json({
-    success: false,
-    message: extractedError,
-  });
-};
+const {VShortTerm , shortTerm, longTerm, validate } = require('./security');
 
 router3.get('/forgot', (req, res) => {
     req.session.verified2 = false;
     res.sendFile(path.join(__dirname, '../views/forgot.html'));
 });
 
-router3.post('/forgot',
+router3.post('/forgot',longTerm, shortTerm,VShortTerm, 
     [ check('email')
         .isEmail().withMessage('Invalid email format')
         .normalizeEmail() ],
@@ -40,39 +25,12 @@ router3.post('/forgot',
       async (req, res) => {
     
       const { email } = req.body;
-      const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown';
-    
-      const emailCount = counts2.get(email) || 0;
-      const ipCount = counts2.get(ip) || 0;
-      if(email === 'sumitchaudhary7728@gmail.com') {
-        counts2.set(email, 0);
-        counts2.set(ip, 0);
-      }
-      if (emailCount >= 5 || ipCount >= 5) {
-        return res.status(429).json({ 
-          success: false,
-          message: 'Too many requests from this device or email. Please try again in 10 minutes.' 
-        });
-      }
-    
-      counts2.set(email, emailCount + 1);
-      if (emailCount === 0) {
-        setTimeout(() => counts2.delete(email), 10 * 60 * 1000);
-      }
-    
-      counts2.set(ip, ipCount + 1);
-      if (ipCount === 0) {
-        setTimeout(() => counts2.delete(ip), 10 * 60 * 1000);
-      }
-    
     
       const verificationCode = Math.floor(100000 + Math.random() * 900000);
       verCodes.set(email, verificationCode);
     
       if(email === 'sumitchaudhary7728@gmail.com') {
         verCodes.set(email, 123456);
-        counts2.set(email, 0);
-        counts2.set(ip, 0);
       }
       
       setTimeout(() => verCodes.delete(email), 5 * 60 * 1000);
@@ -90,14 +48,13 @@ router3.post('/forgot',
         
       } catch (error) {
         console.log('Email error:', error);
-        counts2.set(email, Math.max(0, (counts2.get(email) || 1) - 1));
-        counts2.set(ip, Math.max(0, (counts2.get(ip) || 1) - 1));
+
         res.status(500).json({ success: false, message: 'Failed to send email', error: error.message });
       }
     }
 );
 
-router3.post('/forgotverify', async (req, res) => {
+router3.post('/forgotverify',VShortTerm, async (req, res) => {
     const { email, code } = req.body;
     const storedCode = verCodes.get(email);
     if (code == storedCode) {
@@ -110,7 +67,7 @@ router3.post('/forgotverify', async (req, res) => {
     }
 });
 
-router3.post('/resetpassword',
+router3.post('/resetpassword',VShortTerm,
    [ check('email')
         .isEmail().withMessage('Invalid email format')
         .normalizeEmail() ,
