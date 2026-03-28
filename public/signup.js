@@ -12,6 +12,8 @@ let newemail;
 
 function startCountdown(unlockTime) {
      verbtn.disabled = true;
+    sendcode.disabled= true;
+     signupbtn.disabled= true;
 
     const timer = setInterval(() => {
         const now = Date.now();
@@ -22,7 +24,9 @@ function startCountdown(unlockTime) {
            
             clearInterval(timer);
             verbtn.disabled = false;
-            verbtn.innerText = 'Resend';
+             sendcode.disabled=false;
+            signupbtn.disabled=false;
+            sendcode.innerText = 'Resend';
             message.innerText = '';
             localStorage.removeItem('resendUnlock');
         } else {

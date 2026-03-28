@@ -8,16 +8,19 @@ const resendClient = new Resend(process.env.TOKEN);
 let verCodes = new Map();
 const{ User} = require('./auth');
 const { check} = require('express-validator');
-
-console.log(User);
 const {VShortTerm , shortTerm, longTerm, validate } = require('./security');
+const VShort = VShortTerm(5,1);
+const VShortver = VShortTerm(5,1);
+const VShortres = VShortTerm(5,1);
+const short = shortTerm(60,2);
+const long= longTerm(600,5);
 
 router3.get('/forgot', (req, res) => {
     req.session.verified2 = false;
     res.sendFile(path.join(__dirname, '../views/forgot.html'));
 });
 
-router3.post('/forgot',longTerm, shortTerm,VShortTerm, 
+router3.post('/forgot',long, short,VShort, 
     [ check('email')
         .isEmail().withMessage('Invalid email format')
         .normalizeEmail() ],
@@ -54,7 +57,7 @@ router3.post('/forgot',longTerm, shortTerm,VShortTerm,
     }
 );
 
-router3.post('/forgotverify',VShortTerm, async (req, res) => {
+router3.post('/forgotverify',VShortver, async (req, res) => {
     const { email, code } = req.body;
     const storedCode = verCodes.get(email);
     if (code == storedCode) {
@@ -67,7 +70,7 @@ router3.post('/forgotverify',VShortTerm, async (req, res) => {
     }
 });
 
-router3.post('/resetpassword',VShortTerm,
+router3.post('/resetpassword',VShortres,
    [ check('email')
         .isEmail().withMessage('Invalid email format')
         .normalizeEmail() ,

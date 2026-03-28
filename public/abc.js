@@ -16,7 +16,6 @@ function startCountdown(unlockTime) {
            
             clearInterval(timer);
             verbtn.disabled = false;
-            verbtn.innerText = 'Resend';
              message.innerText = '';
             localStorage.removeItem('resendUnlock');
         } else {

@@ -3,51 +3,62 @@ const { check , validationResult} = require('express-validator');
 const { link } = require('fs');
 let ratelimit = require('express-rate-limit');
 
-const VShortTerm = ratelimit({
+const VShortTerm = (sec,max)=>{
+return ratelimit({
   windowMs:  5 * 1000, 
-  max: 1,
+  max: max,
+  standardHeaders: true, 
+    legacyHeaders: false,
    handler: (req, res) => {
     res.status(429).json({
       success: false,
-      total : 5,
+      total : sec,
       message: "Please wait few seconds before clicking again.",
-      retryAfter: 60 
+      retryAfter: sec,
     });
  }
 });
-
-const shortTerm = ratelimit({
+}
+const shortTerm =(sec,max)=>{
+return ratelimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 2, 
+  max: max, 
+  standardHeaders: true, 
+    legacyHeaders: false,
    handler: (req, res) => {
     const resetTime = req.rateLimit.resetTime; 
     const secondsLeft = Math.ceil((resetTime - Date.now()) / 1000);
  
     res.status(429).json({
       success: false,
-      total : 60,
+      total : sec,
       message: "Please wait 60 seconds before requesting another code.",
      secondsLeft: secondsLeft,
     });
  }
 });
+}
 
 
-const longTerm = ratelimit({
+const longTerm =(sec,max)=>{
+  return ratelimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5,
+  max: max,
+  standardHeaders: true, 
+    legacyHeaders: false,
   handler: (req, res) => {
     const resetTime = req.rateLimit.resetTime; 
     const secondsLeft = Math.ceil((resetTime - Date.now()) / 1000);
  
     res.status(429).json({
       success: false,
-      total : 600,
+      total : sec,
       message: " Your limit has reached ,Please Try again after 10 Minutes.",
       secondsLeft: secondsLeft,
     });
  }
 });
+}
 
 
 

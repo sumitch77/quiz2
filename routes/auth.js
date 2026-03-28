@@ -9,6 +9,12 @@ const resendClient = new Resend(process.env.TOKEN);
 let verificationCodes= new Map();
 const { check } = require('express-validator');
 const {VShortTerm,shortTerm,longTerm,validate,} = require('./security');
+const VShort = VShortTerm(5,1);
+const VShortlog = VShortTerm(5,1);
+const VShortver = VShortTerm(5,1);
+const VShortsign = VShortTerm(5,1);
+const short = shortTerm(60,2);
+const long = longTerm(600,5);
 
 
 const userSchema = new mongoose.Schema({
@@ -29,7 +35,7 @@ router2.get('/logout', (req, res) => {
   });
 });
 
-  router2.get('/index', VShortTerm, (req, res,next) => {
+  router2.get('/index', (req, res,next) => {
        if(req.session.userId&& req.session.userName){
         console.log(`User ${req.session.userId} is accessing the setTest page.`);
       res.sendFile(path.join(__dirname, '../views/setTest.html'));
@@ -44,7 +50,7 @@ router2.get('/login', (req, res) => {
   
 });
 
-router2.post('/login', VShortTerm, async(req, res) => {
+router2.post('/login', VShortlog, async(req, res) => {
     const { password, email } = req.body;
     
     try {
@@ -77,7 +83,7 @@ router2.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/signup.html'));
 });
 
-router2.post('/signup',longTerm,shortTerm,VShortTerm,
+router2.post('/signup',long,short,VShort,
   [ check('email')
     .isEmail().withMessage('Invalid email format')
     .normalizeEmail() ],
@@ -114,7 +120,7 @@ router2.post('/signup',longTerm,shortTerm,VShortTerm,
 });
 
 
-router2.post('/verify2',VShortTerm, (req, res) => {
+router2.post('/verify2',VShortver, (req, res) => {
   const {code, email} = req.body; 
   const stored = verificationCodes.get(email);
   if (code == stored) {
@@ -130,7 +136,7 @@ req.session.verified = true;
 });
 
 
-router2.post('/signupco',VShortTerm,
+router2.post('/signupco',VShortsign,
   [ check('email')
       .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Invalid email format')

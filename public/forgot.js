@@ -10,6 +10,8 @@ let message = document.getElementById('message');
 
 function startCountdown(unlockTime) {
      verbtn.disabled = true;
+     sendcode.disabled= true;
+     resetbtn.disabled= true;
 
     const timer = setInterval(() => {
         const now = Date.now();
@@ -20,6 +22,8 @@ function startCountdown(unlockTime) {
            
             clearInterval(timer);
             verbtn.disabled = false;
+            sendcode.disabled=false;
+            resetbtn.disabled=false;
             verbtn.innerText = 'Resend';
              message.innerText = '';
             localStorage.removeItem('resendUnlock');
