@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+  <title>Quiz</title>
+  <link rel="stylesheet" href="timer.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-logo" href="/">Quiz<span>Site</span></a>
+  </div>
+  <div class="nav-right">
+    <a href="/index"><button id="edit">Make Quiz</button></a>
+    <div class="menu-wrap" id="menuWrap">
+      <button class="menu-btn" id="menuBtn">
+        Menu
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div class="dropdown">
+        <a id="login" href="/login">Login</a>
+        <a id="signup" href="/signup">Signup</a>
+        <div class="dropdown-divider"></div>
+        <a id="logout" href="/logout">Logout</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Quiz Master</h1>
+  <p>
+    <% if (username) { %>
+      Welcome back, <strong><%= username %></strong> — Browse or Create a Quiz
+    <% } else { %>
+      Browse Quizzes created by the community
+    <% } %>
+  </p>
+</div>
+
+
+<div class="quiz-container">
+  <% if (quizzes.length === 0) { %>
+    <p class="no-quiz">No quizzes yet. Be the first to create one!</p>
+  <% } else { %>
+    <% quizzes.forEach(quiz => { %>
+      <div class="quiz-card">
+        <div class="quiz-card-top">
+          <div class="avatar"><%= quiz.createdBy.charAt(0).toUpperCase() %></div>
+          <div class="quiz-info">
+            <h3><%= quiz.createdBy %></h3>
+            <span class="date"><%= quiz.createdAt.toDateString() %></span>
+          </div>
+        </div>
+        <div class="quiz-card-bottom">
+          <span class="qcount"><%= quiz.questions.length %> Questions</span>
+          <a href="/quiz/<%= quiz._id %>"><button class="play-btn">Play</button></a>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+
+
+
+  
+  <script src="timer.js"></script>
+</body>
+</html>

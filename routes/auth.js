@@ -15,6 +15,7 @@ const VShortver = VShortTerm(5,1);
 const VShortsign = VShortTerm(5,1);
 const short = shortTerm(60,2);
 const long = longTerm(600,5);
+const quesid = new Map();
 
 
 const userSchema = new mongoose.Schema({
@@ -35,15 +36,7 @@ router2.get('/logout', (req, res) => {
   });
 });
 
-  router2.get('/index', (req, res,next) => {
-       if(req.session.userId&& req.session.userName){
-        console.log(`User ${req.session.userId} is accessing the setTest page.`);
-      res.sendFile(path.join(__dirname, '../views/setTest.html'));
-  }
-  else {
-      res.redirect('/login');
-  }
-  });
+
 router2.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/abc.html'));
 

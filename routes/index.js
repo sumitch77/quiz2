@@ -4,30 +4,64 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
-
 const dns = require("dns");
+const { check } = require('express-validator');
+const {VShortTerm,shortTerm,longTerm,validate,} = require('./security');
+const VShort = VShortTerm(5,1);
+const VShort1 = VShortTerm(5,1);
+const short = VShortTerm(60,2);
+const long = VShortTerm(600,5);
+let quizdata = new Map();
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 //dns.setDefaultResultOrder('ipv4first');
+
+
 const questionSchema = new mongoose.Schema({
     q1:{ type: String , required: true }, 
-    q2: String,
-    q3: String,
-    q4: String,
-    q5: String,
+    a1: String,
+    a2: String,
+    a3: String,
+    a4: String,
+    ans:{type:String, required:true},
+    spid:String,
 });
-const Question = mongoose.model('Question', questionSchema);
 
+const Question = mongoose.model('Quizdata', questionSchema);
 
-
-router.get('/', (req, res, next) => {
-if (!req.session.userId) {
-        return  res.sendFile(path.join(__dirname, '../views/index.html'));
-
-    }
-    res.sendFile(path.join(__dirname, '../views/index.html'));
-
+const quizSchema = new mongoose.Schema({
+  createdBy: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  questions: [questionSchema],  // array of questions embedded
 });
+
+const Quiz = mongoose.model('Quizall', quizSchema);
+router.get('/', async (req, res) => {
+  try {
+    const quizzes = await Quiz.find().sort({ createdAt: -1 });
+
+    res.render('index', {
+      username: req.session.userName || null,
+      quizzes: quizzes
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Something went wrong');
+  }
+});
+
+router.get('/index', (req, res,next) => {
+       if(req.session.userId&& req.session.userName){
+        req.session.randomid = (req.session.userId+req.session.userName+Date.now()).toString();
+         req.session.questions = [];
+        console.log(`User ${req.session.randomid} is accessing the setTest page.`);
+      res.sendFile(path.join(__dirname, '../views/setTest.html'));
+  }
+  else {
+      res.redirect('/login');
+  }
+  });
 
 router.get('/check', (req, res, next) => {
   if(req.session.userId && req.session.userName) {
@@ -61,15 +95,27 @@ router.get('/list', async (req, res, next) => {
 });
 
 
-
-router.post('/index', async(req, res) => {
+router.post('/sendques',VShort,short,
+ [ check('q1').notEmpty().withMessage("please Enter question"),
+  check('a1').notEmpty().withMessage("please Enter option"),
+  check('a2').notEmpty().withMessage("please Enter option"),
+  check('a3').notEmpty().withMessage("please Enter option"),
+  check('a4').notEmpty().withMessage("please Enter option"),
+  check('ans').notEmpty().withMessage("please Select right option"),
+ ],
+ validate,
+  
+  async(req, res) => {
    
-    const { q1, q2, q3, q4, q5 } = req.body;
-   
+    const { q1, a1, a2, a3, a4, ans } = req.body;
+    const spid = req.session.randomid;
     try {
-        const newQuestion = new Question({ q1, q2, q3, q4, q5 });
-        await newQuestion.save();
-        res.json({ success: true, message: 'Question saved successfully!' });
+         if (!req.session.questions) {
+      req.session.questions = [];
+    }
+    req.session.questions.push({ q1, a1, a2, a3, a4, ans });
+        
+        res.json({ success: true, message: 'Question saved successfully! , Submit next question' });
         
     } catch (err) {
         console.error('Error saving question:', err);
@@ -77,6 +123,32 @@ router.post('/index', async(req, res) => {
     } 
 
 });
+
+router.post('/submitques', VShort1, async (req, res) => {
+  
+    const questions = req.session.questions;
+
+    if (!questions || questions.length === 0) {
+      return res.status(400).json({ success: false, message: 'No questions to save' });
+    }
+
+  try {
+    const newQuiz = new Quiz({
+      createdBy: req.session.userName,
+      questions: questions,
+    });
+
+    await newQuiz.save();
+    req.session.questions = [];
+
+    return res.status(200).json({ success: true, message: 'Quiz saved successfully!' });  // ✅
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: 'Failed to save quiz', error: err.message }); // ✅
+  }
+});
+
 module.exports = {
     router
 };

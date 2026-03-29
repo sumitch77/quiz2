@@ -4,12 +4,15 @@
 <head>
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
   <title>Hello, World!</title>
+  <link rel="stylesheet" href="settest.css">
 </head>
 <body>
   <h1>
-    Hello, World!
+    Create your own Quiz!
   </h1>
-  <form action="/index" method="post">
+  <div id="message"></div>
+  <br>
+  <form id="form">
   <label>
     <input type="text" id="Q1" placeholder="Enter question" class="question" name="q1">
   </label>
@@ -26,16 +29,23 @@
     <input type="text" id="A4" placeholder="Enter option" class="question" name="q5">
   </label>
   <br>
-
-   <button type="submit" id="but">Submit question</button>
+<label for="correctans">Select Right Option:</label>
+<select id="correctans" name="correct_answer">
+  <option value="A">A</option>
+  <option value="B">B</option>
+  <option value="C">C</option>
+  <option value="D">D</option>
+</select>
+  <br>
+   <button id="but">Submit question</button>
+ <br>
+  <button id="submit">Submit Test</button>
 
   </form>
-
   
-  <br>
-  <a href="/list"><button id="but3">Done</button></a>
+ 
+<script src="settest.js"></script>  
 
-  
 
 </body>
 </html>
