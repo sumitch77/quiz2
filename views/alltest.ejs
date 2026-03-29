@@ -1,11 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title><%= quiz.createdBy %>'s Quiz</title>
+  <link rel="stylesheet" href="/alltest.css">
 </head>
 <body>
-    
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-logo" href="/">Quiz<span>App</span></a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Quiz by <span><%= quiz.createdBy %></span></h1>
+  <p><%= quiz.questions.length %> questions &nbsp;·&nbsp; <%= quiz.createdAt.toDateString() %></p>
+</div>
+
+<div id="quiz-wrap">
+
+<div id="result" style="display:none;">
+  <div class="result-box">
+    <p class="result-label">your result</p>
+    <h2 id="score-text"></h2>
+    <p class="result-sub" id="result-sub"></p>
+    <a href="/"><button class="play-btn">← Back to Home</button></a>
+  </div>
+</div>
+
+  <form id="quiz-form">
+    <% quiz.questions.forEach((q, index) => { %>
+      <div class="question-card">
+        <p class="question-text">Q<%= index + 1 %>. <%= q.q1 %></p>
+        <div class="options">
+          <label><input type="radio" name="q<%= index %>" value="A"> <%= q.a1 %></label>
+          <label><input type="radio" name="q<%= index %>" value="B"> <%= q.a2 %></label>
+          <label><input type="radio" name="q<%= index %>" value="C"> <%= q.a3 %></label>
+          <label><input type="radio" name="q<%= index %>" value="D"> <%= q.a4 %></label>
+        </div>
+      </div>
+    <% }) %>
+
+    <!-- pass answers to JS -->
+    <script id="answers-data" type="application/json">
+      <%- JSON.stringify(quiz.questions.map(q => q.ans)) %>
+    </script>
+
+    <button type="submit" class="submit-btn">Submit Quiz</button> </form>
+
+</div>
+
+<script>
+   const answers = JSON.parse(document.getElementById('answers-data').textContent);
+
+document.getElementById('quiz-form').addEventListener('submit', (e) => {
+  e.preventDefault();                        // ✅ stops page refresh
+
+  // check all questions answered
+  const total = answers.length;
+  let allAnswered = true;
+
+  for (let i = 0; i < total; i++) {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    if (!selected) {
+      allAnswered = false;
+      break;
+    }
+  }
+
+  if (!allAnswered) {
+    alert('Please answer all questions before submitting!');
+    return;                                 
+  }
+
+  
+  let score = 0;
+
+  answers.forEach((correctAns, index) => {
+    const selected = document.querySelector(`input[name="q${index}"]:checked`);
+    if (selected && selected.value === correctAns) {
+      score++;
+    }
+  });
+  const percent = Math.round((score / total) * 100);
+
+  document.getElementById('quiz-form').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('score-text').textContent = `${score} / ${total}`;
+  document.getElementById('result-sub').textContent = `${percent}% correct`;
+});
+</script>
+
 </body>
 </html>

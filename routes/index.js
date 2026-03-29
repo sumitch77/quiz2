@@ -149,6 +149,26 @@ router.post('/submitques', VShort1, async (req, res) => {
   }
 });
 
+
+router.get('/quiz/:id', async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id);
+
+    if (!quiz) {
+      return res.status(404).send('Quiz not found');
+    }
+
+    res.render('alltest', {
+      username: req.session.userName || null,
+      quiz: quiz
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Something went wrong');
+  }
+});
+
 module.exports = {
     router
 };
