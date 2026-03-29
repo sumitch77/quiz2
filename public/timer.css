@@ -177,6 +177,17 @@ nav {
   color: var(--accent-red) !important;
   display: block;
 }
+#profile,#profile2{
+
+  color: var(--accent-blue) !important;
+  display: block;
+}
+
+#profile:hover, #profile2:hover {
+  background: rgba(34, 45, 133, 0.07) !important;
+  border-left-color: var(--accent-blue) !important;
+  color: var(--accent-blue) !important;
+}
 
 #logout:hover {
   background: rgba(255, 23, 68, 0.07) !important;
@@ -381,12 +392,12 @@ nav {
 
 @media (max-width: 480px) {
   .hero h1 {
-    font-size: 22px;
+    font-size: 25px;
   }
 
   .quiz-container {
-    padding: 1rem;
-    gap: 1rem;
+    padding: 1.4rem;
+    gap: 1.2rem;
   }
 
   .quiz-card {

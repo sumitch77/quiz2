@@ -3,7 +3,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
 body {
@@ -14,27 +14,24 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
 }
-
 #head {
     color: #38bdf8; 
-    margin-bottom: 10px;
-    font-size: 1.8rem;
+    margin-bottom: 20px;
+    font-size: 2rem;
     text-align: center;
 }
 
-
 #form {
-    background-color: #1e293b;
+    background-color: #1e293b; 
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     width: 100%;
-    max-width: 400px;
+    max-width: 380px;
 }
 
-
+/* Inputs */
 input {
     width: 100%;
     padding: 12px;
@@ -43,57 +40,46 @@ input {
     border-radius: 8px;
     color: #fff;
     font-size: 1rem;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    transition: all 0.3s ease;
 }
+
 
 input:focus {
     outline: none;
-    border-color: #38bdf8;
-    box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+    border-color: #38bdf8; /* Bright Blue */
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
 }
 
-/* Buttons */
-button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-}
-
-button:active {
-    transform: scale(0.98);
-}
-
-#sendcode {
-    background-color: #334155; 
-    color: #f1f5f9;
-}
 
 #verbtn {
-    background-color: #0ea5e9; 
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    border: none;
+    border-radius: 8px;
     color: white;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.2s, opacity 0.2s;
 }
 
-#resetbtn {
-    background-color: #10b981; 
-    color: white;
-    font-size: 1.1rem;
-}
-
-button:hover {
+#verbtn:hover {
     opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+#verbtn:active {
+    transform: translateY(0);
 }
 
 #message {
+    margin-top: 1rem;
+    color: #f34d30;
     text-align: center;
-    margin-top: 15px;
     font-size: 0.9rem;
-    color: red;
 }
-
 #warn{
     display: none;
     position: fixed;
@@ -111,13 +97,4 @@ button:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 9999; 
 
-}
-@media (max-width: 480px) {
-    #form {
-        padding: 1.5rem;
-    }
-    
-    #head {
-        font-size: 1.5rem;
-    }
 }

@@ -9,6 +9,7 @@ let verbtn = document.getElementById('verbtn');
 let signupbtn = document.getElementById('signupbtn');
 let message = document.getElementById('message');
 let newemail;
+let warn = document.querySelector('#warn');
 
 function startCountdown(unlockTime) {
      verbtn.disabled = true;
@@ -50,6 +51,12 @@ function startCountdown(unlockTime) {
        if(response.status===429){
         const data = await response.json();
         message.innerText = data.message;
+        warn.innerText = message.innerText;
+        warn.style.display= 'block';
+        setTimeout(()=>{
+          warn.innerText = '';
+        warn.style.display= 'none';
+        },5000)
         let unlockTime;
           if(data.total === 600){
         unlockTime = Date.now() + 600000; 
@@ -67,10 +74,24 @@ function startCountdown(unlockTime) {
     if(response.status===400){
         const data = await response.json();
         message.innerText = data.message;
+        warn.innerText = message.innerText;
+        warn.style.display= 'block';
+         setTimeout(()=>{
+    message.innerText='';
+    warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
         return;
     }
     const data = await response.json();
     message.innerHTML =data.message;
+    warn.innerText = message.innerText;
+        warn.style.display= 'block';
+     setTimeout(()=>{
+    message.innerText='';
+    warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
     if(data.success){
       localStorage.setItem('codesend','true'); 
       localStorage.removeItem('resendUnlock');      
@@ -79,7 +100,14 @@ function startCountdown(unlockTime) {
     }
    
   } catch (err) {
-    console.log('Fetch error:', err);
+    message.innerText='Unable to connect to server';
+    warn.innerText = message.innerText;
+        warn.style.display= 'block';
+        setTimeout(()=>{
+          message.innerText='';
+          warn.innerText = message.innerText;
+        warn.style.display= 'none';
+        },5000)
   }
 });
 
@@ -94,6 +122,12 @@ verbtn.addEventListener('click', async () => {
        if(response.status===429){
         const data = await response.json();
         message.innerText = data.message;
+        warn.innerText = message.innerText;
+        warn.style.display= 'block';
+        setTimeout(()=>{
+          warn.innerText = message.innerText;
+        warn.style.display= 'none';
+        },5000)
         const unlockTime = Date.now() + 5000; 
         
         localStorage.setItem('resendUnlock', unlockTime);
@@ -105,14 +139,35 @@ verbtn.addEventListener('click', async () => {
     if(response.status===400){
         const data = await response.json();
         message.innerText = data.message;
+        warn.innerText = message.innerText;
+        warn.style.display= 'block';
+         setTimeout(()=>{
+    message.innerText='';
+    warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
         return;
     }
     const data = await response.json();
     localStorage.removeItem('codesend');
     message.innerText = data.message;
+    warn.innerText = message.innerText;
+        warn.style.display= 'block';
+     setTimeout(()=>{
+    message.innerText='';
+    warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
     localStorage.removeItem('resendUnlock');
     } catch (err) {
-    console.log('Fetch error:', err);
+    message.innerText='Unable to connect to server';
+    warn.innerText = message.innerText;
+        warn.style.display= 'block';
+     setTimeout(()=>{
+    message.innerText='';
+    warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
   }
 });
 
@@ -128,6 +183,12 @@ e.preventDefault();
            if(response.status===429){
         const data = await response.json();
         message.innerText = data.message;
+        warn.innerText = message.innerText;
+        warn.style.display= 'block';
+        setTimeout(()=>{
+          warn.innerText = '';
+        warn.style.display= 'none';
+        },5000)
         const unlockTime = Date.now() + 5000; 
         
         localStorage.setItem('resendUnlock', unlockTime);
@@ -138,10 +199,24 @@ e.preventDefault();
     if(response.status===400){
         const data = await response.json();
         message.innerText = data.message;
+        warn.innerText = message.innerText;
+        warn.style.display= 'block';
+         setTimeout(()=>{
+    message.innerText='';
+    warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
         return;
     }
         const data = await response.json();
         message.innerHTML = data.message + (data.link ? `<a href="${data.link}">${' ' + data.actionText}</a>` : '');
+        warn.innerText = message.innerText;
+        warn.style.display= 'block';
+         setTimeout(()=>{
+    message.innerText='';
+    warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
         if (data.success) {
             name1.value = '';
             phone.value = '';
@@ -154,6 +229,13 @@ e.preventDefault();
         }
 
     } catch (err) {
-        console.log('Fetch error:', err);
+        message.innerText='Unable to connect to server';
+        warn.innerText = message.innerText;
+        warn.style.display= 'block';
+         setTimeout(()=>{
+    message.innerText='';
+    warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
     }
 });

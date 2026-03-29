@@ -65,7 +65,7 @@ router.get('/index', (req, res,next) => {
 
 router.get('/check', (req, res, next) => {
   if(req.session.userId && req.session.userName) {
-    res.json({ loggedIn: true, userName: req.session.userName });
+    res.json({ success: true , loggedIn: true, username: req.session.userName, useremail : req.session.userEmail });
   } else {
     res.json({ loggedIn: false });
   }

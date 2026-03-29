@@ -7,6 +7,7 @@ let ans = document.querySelector('#correctans');
 let send = document.querySelector('#but');
 let submit = document.querySelector('#submit');
 let message = document.querySelector('#message');
+let warn = document.querySelector('#warn');
 
 send.addEventListener("click",async(e)=>{
     e.preventDefault();
@@ -18,6 +19,14 @@ send.addEventListener("click",async(e)=>{
     });
     const data = await response.json();
     message.innerHTML= data.message;
+       warn.innerText = message.innerText;
+        warn.style.display= 'block';
+  
+     setTimeout(()=>{
+    message.innerText='';
+       warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
       if(data.success){
         q1.value = '';
         a1.value='';
@@ -27,7 +36,14 @@ send.addEventListener("click",async(e)=>{
       }
     
     } catch (err) {
-    console.log('Fetch error:', err);
+    message.innerText='Unable to connect to server ';
+       warn.innerText = message.innerText;
+        warn.style.display= 'block';
+     setTimeout(()=>{
+    message.innerText='';
+       warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
   }
 
 });
@@ -44,19 +60,31 @@ submit.addEventListener("click",async(e)=>{
     const data = await response.json();
 
     if (data.success) {
-      message.innerText = data.message;      
+      message.innerText = data.message; 
+         warn.innerText = message.innerText;
+        warn.style.display= 'block';     
   setTimeout(() => {
     window.location.href = '/';         
   }, 1500); 
 }
   else{                  
       message.innerText = data.message;
+         warn.innerText = message.innerText;
+        warn.style.display= 'block';
+       setTimeout(()=>{
+    message.innerText='';
+       warn.innerText = message.innerText;
+        warn.style.display= 'none';
+    },5000);
     }
 
     
    
     } catch (err) {
-    console.log('Fetch error:', err);
+    message.innerText='Unable to connect to server';
+     setTimeout(()=>{
+    message.innerText='';
+    },5000);
   }
 
 });

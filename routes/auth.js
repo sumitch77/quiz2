@@ -38,9 +38,7 @@ router2.get('/logout', (req, res) => {
 
 
 router2.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '../views/abc.html'));
-
-  
+  res.sendFile(path.join(__dirname, '../views/login.html'));
 });
 
 router2.post('/login', VShortlog, async(req, res) => {
@@ -51,6 +49,7 @@ router2.post('/login', VShortlog, async(req, res) => {
          if (user) {
             req.session.userId = user._id.toString();
             req.session.userName = user.name1;
+            req.session.userEmail= user.email;
       res.json({ success: true, message: 'Login successful!' });
       console.log(`User ${req.session.userId} logged in successfully.`);
       console.log(`Session data: ${JSON.stringify(req.session.userName)}`);
@@ -161,6 +160,7 @@ async (req, res) => {
             req.session.verified = false;
              req.session.userId = newUser._id.toString();
             req.session.userName = newUser.name1;
+            req.session.userEmail = newUser.email;
     res.json({ success: true, message: 'Signup successful!' });
 
     } catch (err) {
