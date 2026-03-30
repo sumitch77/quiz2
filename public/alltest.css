@@ -307,6 +307,116 @@ nav {
   background: rgba(0, 229, 255, 0.08);
   box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
 }
+.leaderboard {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  background: transparent;
+  border: 1px solid var(--primary-green);
+  border-radius: 8px;
+  color: var(--primary-green);
+  font-size: 13px;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+
+.leaderboard:hover {
+  background: rgba(0, 230, 118, 0.08);
+  box-shadow: 0 0 12px rgba(0, 230, 118, 0.2);
+}
+
+/* ── Leaderboard ── */
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+}
+
+.leaderboard-row:hover {
+  border-color: var(--border-hover);
+}
+
+.leaderboard-row.top-rank {
+  border-color: rgba(0, 230, 118, 0.3);
+  background: rgba(0, 230, 118, 0.04);
+}
+
+.rank {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--text-muted);
+  min-width: 28px;
+}
+
+.top-rank .rank {
+  color: var(--primary-green);
+  font-weight: 700;
+}
+
+.lb-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-green));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  color: #0d1117;
+  flex-shrink: 0;
+  font-family: 'Syne', sans-serif;
+}
+
+.lb-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.lb-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.lb-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'DM Mono', monospace;
+}
+
+.lb-score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.lb-percent {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary-green);
+}
+
+.top-rank .lb-percent {
+  text-shadow: 0 0 12px rgba(0, 230, 118, 0.4);
+}
+
+.lb-fraction {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'DM Mono', monospace;
+}
 
 /* ════════════════════════════════
    MEDIA QUERIES

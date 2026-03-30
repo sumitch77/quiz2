@@ -52,8 +52,7 @@ router2.post('/login', VShortlog, async(req, res) => {
             req.session.userEmail= user.email;
       res.json({ success: true, message: 'Login successful!' });
       console.log(`User ${req.session.userId} logged in successfully.`);
-      console.log(`Session data: ${JSON.stringify(req.session.userName)}`);
-
+      
       
     } else {
       res.json({ success: false, message: 'Invalid credentials. Please try again Wrong email or password.' });

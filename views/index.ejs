@@ -56,6 +56,8 @@
           <div class="avatar"><%= quiz.createdBy.charAt(0).toUpperCase() %></div>
           <div class="quiz-info">
             <h3><%= quiz.createdBy %></h3>
+            <a href="/quiz/<%= quiz._id %>/leaderboard"><button class="leaderboard">Leaderboard</button></a>
+            <br>
             <span class="date"><%= quiz.createdAt.toDateString() %></span>
           </div>
         </div>

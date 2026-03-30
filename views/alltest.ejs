@@ -54,8 +54,8 @@
 <script>
    const answers = JSON.parse(document.getElementById('answers-data').textContent);
 
-document.getElementById('quiz-form').addEventListener('submit', (e) => {
-  e.preventDefault();                        // ✅ stops page refresh
+document.getElementById('quiz-form').addEventListener('submit', async(e) => {
+  e.preventDefault();                       
 
   // check all questions answered
   const total = answers.length;
@@ -84,6 +84,13 @@ document.getElementById('quiz-form').addEventListener('submit', (e) => {
     }
   });
   const percent = Math.round((score / total) * 100);
+  const quizId = window.location.pathname.split('/')[2]; 
+
+await fetch(`/quiz/${quizId}/score`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ score, total })
+});
 
   document.getElementById('quiz-form').style.display = 'none';
   document.getElementById('result').style.display = 'block';

@@ -29,13 +29,25 @@ const questionSchema = new mongoose.Schema({
 
 const Question = mongoose.model('Quizdata', questionSchema);
 
+const scoreSchema = new mongoose.Schema({
+  username: String,
+  score: Number,
+  total: Number,
+  percent: Number,
+  playedAt: { type: Date, default: Date.now }
+});
+
 const quizSchema = new mongoose.Schema({
   createdBy: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
-  questions: [questionSchema],  // array of questions embedded
+  questions: [questionSchema], 
+   scores: [scoreSchema],
 });
 
 const Quiz = mongoose.model('Quizall', quizSchema);
+
+
+
 router.get('/', async (req, res) => {
   try {
     const quizzes = await Quiz.find().sort({ createdAt: -1 });
@@ -166,6 +178,49 @@ router.get('/quiz/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Something went wrong');
+  }
+});
+
+router.get('/quiz/:id/leaderboard', async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id);
+
+    if (!quiz) {
+      return res.status(404).send('Quiz not found');
+    }
+
+    res.render('leaderboard', {
+      username: req.session.userName || null,
+      quiz: quiz,
+      scores: quiz.scores || []     // scores array from DB
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Something went wrong');
+  }
+});
+
+router.post('/quiz/:id/score', async (req, res) => {
+  try {
+    const { score, total } = req.body;
+
+    await Quiz.findByIdAndUpdate(req.params.id, {
+      $push: {
+        scores: {
+          username: req.session.userName || 'Anonymous',
+          score: score,
+          total: total,
+          percent: Math.round((score / total) * 100),
+          playedAt: new Date()
+        }
+      }
+    });
+
+    res.json({ success: true });
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 

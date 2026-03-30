@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         if(data.success){
           profile.innerText = 'Username -' + data.username;
-          profile2.innerText = 'Email -' + data.email;
+          profile2.innerText = 'Email -' + data.useremail;
         }
     } catch (err) {
         console.log('Error in fetching user data', err);

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Leaderboard</title>
+  <link rel="stylesheet" href="/alltest.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-logo" href="/">Quiz<span>App</span></a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Leader<span>board</span></h1>
+  <p>Quiz by <%= quiz.createdBy %> &nbsp;·&nbsp; <%= quiz.questions.length %> questions</p>
+</div>
+
+<div id="quiz-wrap">
+
+  <% if (scores.length === 0) { %>
+    <p class="no-quiz">No scores yet — be the first to play!</p>
+
+  <% } else { %>
+    <!-- sort by percent descending -->
+    <% scores.sort((a, b) => b.percent - a.percent).forEach((entry, i) => { %>
+      <div class="leaderboard-row <%= i === 0 ? 'top-rank' : '' %>">
+
+        <div class="rank">#<%= i + 1 %></div>
+
+        <div class="lb-avatar"><%= entry.username.charAt(0).toUpperCase() %></div>
+
+        <div class="lb-info">
+          <span class="lb-name"><%= entry.username %></span>
+          <span class="lb-date"><%= new Date(entry.playedAt).toDateString() %></span>
+        </div>
+
+        <div class="lb-score">
+          <span class="lb-percent"><%= entry.percent %>%</span>
+          <span class="lb-fraction"><%= entry.score %> / <%= entry.total %></span>
+        </div>
+
+      </div>
+    <% }) %>
+  <% } %>
+
+  <div style="text-align:center; margin-top:2rem;">
+    <a href="/quiz/<%= quiz._id %>"><button class="play-btn">Play Again</button></a>
+    <a href="/"><button class="play-btn" style="margin-left:0.75rem;">← Home</button></a>
+  </div>
+
+</div>
+
+</body>
+</html>
