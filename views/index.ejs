@@ -7,13 +7,14 @@
   <link rel="stylesheet" href="timer.css">
 </head>
 <body>
-
+<div id="warn"></div>
 <nav>
   <div class="nav-left">
     <a class="nav-logo" href="/">Quiz<span>Site</span></a>
   </div>
   <div class="nav-right">
     <a href="/index"><button id="edit">Make Quiz</button></a>
+    <button id="cut">X</button>
     <div class="menu-wrap" id="menuWrap">
       <button class="menu-btn" id="menuBtn">
         Login / Logout
@@ -22,6 +23,9 @@
         </svg>
       </button>
       <div class="dropdown">
+
+        <div id="imgin"></div>
+        <div class="dropdown-divider"></div>
         <a id="login" href="/login">Login</a>
         <a id="signup" href="/signup">Signup</a>
         <a id="profile"></a>

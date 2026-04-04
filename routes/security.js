@@ -2,7 +2,16 @@ const express = require('express');
 const { check , validationResult} = require('express-validator');
 const { link } = require('fs');
 let ratelimit = require('express-rate-limit');
+const multer = require('multer');
 
+const storage = multer.diskStorage({
+  destination:
+   (req, file, cb) => 
+    cb(null, 'uploads/'),
+  filename: (req, file, cb) => 
+    cb(null, Date.now() + '-' + file.originalname)
+});
+const upload = multer({ storage });
 const VShortTerm = (sec,max)=>{
 return ratelimit({
   windowMs:  5 * 1000, 
@@ -80,5 +89,6 @@ VShortTerm,
 shortTerm,
 longTerm,
 validate,
+upload,
 };
 

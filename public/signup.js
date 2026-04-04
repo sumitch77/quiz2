@@ -10,6 +10,32 @@ let signupbtn = document.getElementById('signupbtn');
 let message = document.getElementById('message');
 let newemail;
 let warn = document.querySelector('#warn');
+const fileInput = document.getElementById('fileInput');
+const avatarImg = document.getElementById('avatarImg');
+const placeholder = document.getElementById('placeholder');
+const overlay = document.getElementById('overlay');
+const filename = document.getElementById('filename');
+const tick = document.getElementById('tick');
+   
+fileInput.addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+ 
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      avatarImg.src = e.target.result;
+      avatarImg.style.display = 'block';
+      placeholder.style.display = 'none';
+      overlay.classList.add('visible');
+ 
+      const name = file.name.length > 26 ? file.name.slice(0, 24) + '…' : file.name;
+      filename.textContent = name;
+      filename.classList.add('show');
+ 
+      tick.classList.add('show');
+    };
+    reader.readAsDataURL(file);
+  });
 
 function startCountdown(unlockTime) {
      verbtn.disabled = true;
@@ -36,11 +62,12 @@ function startCountdown(unlockTime) {
           }, 1000);
 }
 
-
+ let filesend;
  sendcode.addEventListener('click', async (event) => {
 
   event.preventDefault(); 
    newemail= email.value;
+ 
 
   try {
     const response = await fetch('/signup', {
@@ -172,13 +199,21 @@ verbtn.addEventListener('click', async () => {
 });
 
 signupbtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+
   newemail= email.value;
-e.preventDefault();
+  filesend = fileInput.files[0];
+      const formData = new FormData();
+    formData.append('filesend', filesend);        // file
+    formData.append('name1', name1.value);
+    formData.append('phone', phone.value);
+    formData.append('email', newemail);
+    formData.append('password', password.value);
+    formData.append('confirmpass', confirmpass.value);
     try {
         const response = await fetch('/signupco', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name1: name1.value, phone: phone.value, email: email.value, password: password.value, confirmpass: confirmpass.value })
+            body: formData
         });
            if(response.status===429){
         const data = await response.json();

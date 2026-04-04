@@ -224,6 +224,14 @@ router.post('/quiz/:id/score', async (req, res) => {
   }
 });
 
+router.get('/profile', (req, res) => {
+  if (req.session.userId && req.session.userName) {
+    res.json({ success: true, username: req.session.userName, useremail: req.session.userEmail , photourl : req.session.photourl });
+  } else {
+    res.json({ success: false, message: 'User not logged in' });
+  }
+});
+
 module.exports = {
     router
 };

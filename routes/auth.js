@@ -16,6 +16,7 @@ const VShortsign = VShortTerm(5,1);
 const short = shortTerm(60,2);
 const long = longTerm(600,5);
 const quesid = new Map();
+const {upload} = require('./security');
 
 
 const userSchema = new mongoose.Schema({
@@ -23,6 +24,7 @@ const userSchema = new mongoose.Schema({
     phone: { type: Number, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
+    filesend : {type : String},
 });
 const User = mongoose.model('user', userSchema);
 
@@ -50,6 +52,7 @@ router2.post('/login', VShortlog, async(req, res) => {
             req.session.userId = user._id.toString();
             req.session.userName = user.name1;
             req.session.userEmail= user.email;
+            req.session.photourl = user.filesend;
       res.json({ success: true, message: 'Login successful!' });
       console.log(`User ${req.session.userId} logged in successfully.`);
       
@@ -127,7 +130,7 @@ req.session.verified = true;
 });
 
 
-router2.post('/signupco',VShortsign,
+router2.post('/signupco',VShortsign,upload.single('filesend') , 
   [ check('email')
       .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Invalid email format')
@@ -151,12 +154,14 @@ router2.post('/signupco',VShortsign,
   
     
 async (req, res) => {
-  const { name1 , phone , email , password, confirmpass } = req.body;
+  const { name1 , phone , email , password, confirmpass} = req.body;
+  const filePath = req.file ? req.file.path : null;
   if(req.session.verified && req.session.verifiedEmail === email) {
     try {
-  const newUser = new User({ name1, phone, email, password });
+  const newUser = new User({ name1, phone, email, password, filesend: filePath });
             await newUser.save();
             req.session.verified = false;
+            req.session.photourl = filePath;
              req.session.userId = newUser._id.toString();
             req.session.userName = newUser.name1;
             req.session.userEmail = newUser.email;
@@ -175,6 +180,7 @@ async (req, res) => {
   }
     
 });
+
 
 
 module.exports = {
