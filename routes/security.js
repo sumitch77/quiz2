@@ -3,15 +3,31 @@ const { check , validationResult} = require('express-validator');
 const { link } = require('fs');
 let ratelimit = require('express-rate-limit');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
 
-const storage = multer.diskStorage({
-  destination:
-   (req, file, cb) => 
-    cb(null, 'uploads/'),
-  filename: (req, file, cb) => 
-    cb(null, Date.now() + '-' + file.originalname)
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINNAME,
+  api_key: process.env.CLOUDINAPI,
+  api_secret: process.env.CLOUDINSEC,
 });
-const upload = multer({ storage });
+
+const fileFilter = (req, file, cb) => {
+  const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+  
+  if (allowed.includes(file.mimetype)) {
+    cb(null, true); 
+  } else {
+    cb(new Error('Only images allowed'), false); 
+  }
+};
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage,
+    fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 },
+ });
+
 const VShortTerm = (sec,max)=>{
 return ratelimit({
   windowMs:  5 * 1000, 
@@ -90,5 +106,6 @@ shortTerm,
 longTerm,
 validate,
 upload,
+cloudinary,
 };
 

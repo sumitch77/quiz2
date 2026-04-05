@@ -23,7 +23,7 @@ app.set('trust proxy', 1);
 app.use(express.json());
 
 app.use(session({
-    secret: 'papasecretkey',
+    secret: process.env.SESSION,
     resave: false,
     saveUninitialized: true,
     store: store

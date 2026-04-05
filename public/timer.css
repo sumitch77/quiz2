@@ -95,6 +95,20 @@ nav {
   background: rgba(0, 229, 255, 0.08);
   box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
 }
+#vault {
+  padding: 0.45rem 1rem;
+  background: transparent;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  color: var(--primary-hover);
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.03em;
+}
 
 /* ── Dropdown Menu ── */
 .menu-wrap {

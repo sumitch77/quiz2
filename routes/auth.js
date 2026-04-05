@@ -16,7 +16,7 @@ const VShortsign = VShortTerm(5,1);
 const short = shortTerm(60,2);
 const long = longTerm(600,5);
 const quesid = new Map();
-const {upload} = require('./security');
+const {upload, cloudinary} = require('./security');
 
 
 const userSchema = new mongoose.Schema({
@@ -128,9 +128,33 @@ req.session.verified = true;
   }
   
 });
+const handleupload =(req, res, next) => {
+ upload.single('filesend')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+          success: false, 
+          message: 'File too large. Max size is 5MB' 
+        });
+      }
+      if (err.message === 'Only images allowed') {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Only images allowed (jpg, png, webp)' 
+        });
+      }
+      // any other multer error
+      return res.status(400).json({ 
+        success: false, 
+        message: err.message 
+      });
+    }
+  
+    next(); 
+  });
+}
 
-
-router2.post('/signupco',VShortsign,upload.single('filesend') , 
+router2.post('/signupco',VShortsign,handleupload,
   [ check('email')
       .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Invalid email format')
@@ -155,7 +179,21 @@ router2.post('/signupco',VShortsign,upload.single('filesend') ,
     
 async (req, res) => {
   const { name1 , phone , email , password, confirmpass} = req.body;
-  const filePath = req.file ? req.file.path : null;
+  let filePath = null;
+   if (req.file) {
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: 'uploads' },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+
+    filePath = result.secure_url;
+  }
   if(req.session.verified && req.session.verifiedEmail === email) {
     try {
   const newUser = new User({ name1, phone, email, password, filesend: filePath });

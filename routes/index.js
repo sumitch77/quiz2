@@ -232,8 +232,36 @@ router.get('/profile', (req, res) => {
   }
 });
 
+router.get('/admin/login', (req, res) => {
+  if(req.session.userName){
+  res.sendFile(path.join(__dirname, '../views/adminlog.html'));
+  }else{
+    res.redirect('/login');
+  }
+});
+
+router.post('/vault', async (req, res) => {
+  const { email , password } = req.body;
+  if (email === process.env.ADMINEMAIL && password === process.env.ADMINPASS) {
+    req.session.admin = true;
+    res.json({ success: true, message: 'Admin login successful!' });
+  }
+  else {
+    res.json({ success: false, message: 'Invalid credentials. Please try again Wrong email or password.' });
+  }
+});
+router.get('/secvault', (req, res) => {
+  if (req.session.admin) {
+    res.sendFile(path.join(__dirname, '../views/vault.html'));
+  }
+  else {
+    res.redirect('/admin/login');
+   }
+});
 module.exports = {
     router
+
 };
+
 
 

@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if(profileData.success){
           menuBtn.innerHTML = `<img src="${url}" alt="Profile Picture" style="width: 4rem; height: 3rem; border-radius: 50%;">`; 
-         imgin.innerHTML = `<img src="${url}" alt="Profile Picture" style="width: 6rem; height: 3.5rem; border-radius: 50%;">`;
+         imgin.innerHTML = `<img src="${url}" alt="Profile Picture" style="width: 6rem; height: 3.5rem; cursor: pointer; border-radius: 50%;">`;
         }
     } catch (err) {
         console.log('Error in fetching user data', err);
