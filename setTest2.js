@@ -42,7 +42,7 @@ app.use((req, res, next) => {
 });
 
  const port = 3069;
- mongoose.connect(process.env.url).then(() => {
+ mongoose.connect(process.env.URL).then(() => {
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
     });
