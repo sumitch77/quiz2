@@ -19,6 +19,7 @@ const store = new mongostore({
     uri: process.env.URL,
     collection: 'sessions',
 });
+console.log(process.env.URL);
 app.set('trust proxy', 1);
 app.use(express.json());
 
