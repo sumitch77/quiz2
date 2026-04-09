@@ -16,7 +16,7 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.set('views', path.join(__dirname, 'views'));
 const store = new mongostore({
-    uri: process.env.url,
+    uri: process.env.URL,
     collection: 'sessions',
 });
 app.set('trust proxy', 1);
