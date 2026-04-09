@@ -28,6 +28,11 @@ const upload = multer({ storage,
   limits: { fileSize: 5 * 1024 * 1024 },
  });
 
+ const docstorage = multer.memoryStorage();
+  const docupload = multer({ docstorage,
+    limits: { fileSize: 20 * 1024 * 1024 },
+  });
+
 const VShortTerm = (sec,max)=>{
 return ratelimit({
   windowMs:  5 * 1000, 
@@ -107,5 +112,6 @@ longTerm,
 validate,
 upload,
 cloudinary,
+docupload,
 };
 

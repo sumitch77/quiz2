@@ -6,15 +6,12 @@ const dotenv = require('dotenv');
 dotenv.config();
 const dns = require("dns");
 const { check } = require('express-validator');
-const {VShortTerm,shortTerm,longTerm,validate,} = require('./security');
+const {VShortTerm,shortTerm,longTerm,validate, docupload, cloudinary,} = require('./security');
 const VShort = VShortTerm(5,1);
 const VShort1 = VShortTerm(5,1);
 const short = VShortTerm(60,2);
 const long = VShortTerm(600,5);
-let quizdata = new Map();
-
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
-//dns.setDefaultResultOrder('ipv4first');
 
 
 const questionSchema = new mongoose.Schema({
@@ -250,17 +247,39 @@ router.post('/vault', async (req, res) => {
     res.json({ success: false, message: 'Invalid credentials. Please try again Wrong email or password.' });
   }
 });
-router.get('/secvault', (req, res) => {
-  if (req.session.admin) {
-    res.sendFile(path.join(__dirname, '../views/vault.html'));
-  }
-  else {
-    res.redirect('/admin/login');
-   }
+
+const handleupload =(req, res, next) => {
+ docupload.single('filesend')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+          success: false, 
+          message: 'File too large. Max size is 20MB' 
+        });
+      }
+      if (err.message === 'Only images allowed') {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Only images allowed (jpg, png, webp)' 
+        });
+      }
+      // any other multer error
+      return res.status(400).json({ 
+        success: false, 
+        message: err.message 
+      });
+    }
+  
+    next(); 
+  });
+}
+
+router.get('/vault', (req, res) => {
+    res.render('vault');
+
 });
 module.exports = {
     router
-
 };
 
 
