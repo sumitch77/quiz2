@@ -53,7 +53,7 @@ router.get('/', async (req, res) => {
     res.render('index', {
       username: req.session.userName || null,
       quizzes: quizzes,
-      owner : quizzes.email === req.session.useremail
+      owner :req.session.userEmail || null
     });
 
   } catch (err) {

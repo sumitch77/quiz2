@@ -49,23 +49,20 @@
     <% } %>
   </p>
 </div>
-<%if(owner) {%>
-  <style>
-    #delbt{
-      display: block;
-    }
-  </style>
-<%}%>
+
 
 <div class="quiz-container">
   <% if (quizzes.length === 0) { %>
     <p class="no-quiz">No quizzes yet. Be the first to create one!</p>
   <% } else { %>
     <% quizzes.forEach(quiz => { %>
+
       <div class="quiz-card">
         <div class="quiz-card-top">
           <div class="avatar"><%= quiz.createdBy.charAt(0).toUpperCase() %></div>
-          <a id="delbt" href="/delete/<%= quiz._id %>?email=<%= quiz.email %>"><p class="delete"><img id="img" src="https://imgs.search.brave.com/ieRESv1-iM4xfvWoOMgeUyb7Kr_4NMwLPbUenyNuCjA/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9jZG40/Lmljb25maW5kZXIu/Y29tL2RhdGEvaWNv/bnMvc29jaWFsLW1l/c3NhZ2luZy11aS1j/b2xvcmljb24tMS8y/MS81MS0xMjgucG5n"></p></a>
+          <% if (quiz.email === owner) { %>
+            <a id="delbt" href="/delete/<%= quiz._id %>?email=<%= quiz.email %>"><p class="delete"><img id="img" src="https://imgs.search.brave.com/ieRESv1-iM4xfvWoOMgeUyb7Kr_4NMwLPbUenyNuCjA/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9jZG40/Lmljb25maW5kZXIu/Y29tL2RhdGEvaWNv/bnMvc29jaWFsLW1l/c3NhZ2luZy11aS1j/b2xvcmljb24tMS8y/MS81MS0xMjgucG5n"></p></a>
+          <% } %>
           <div class="quiz-info">
             <h3><%= quiz.createdBy %></h3>
             <a href="/quiz/<%= quiz._id %>/leaderboard"><button class="leaderboard">Leaderboard</button></a>
