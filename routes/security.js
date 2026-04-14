@@ -37,7 +37,7 @@ const VShortTerm = (sec,max)=>{
 return ratelimit({
   windowMs:  5 * 1000, 
   max: max,
-  standardHeaders: true, 
+  standardHeaders: true,
     legacyHeaders: false,
    handler: (req, res) => {
     res.status(429).json({

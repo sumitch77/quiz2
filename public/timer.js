@@ -10,6 +10,10 @@ let imgin = document.getElementById('imgin');
 let warn = document.querySelector('#warn');
 let url;
 let cut = document.querySelector('#cut');
+let deleteBtn = document.querySelector('.delete');
+let message = document.getElementById('message');
+let delbt = document.querySelector('#delbt');
+let img = document.querySelector('#img');
 
   menuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -78,7 +82,5 @@ cut.addEventListener('click', () => {
   warn.style.display = 'none';
   cut.style.display = 'none';
 });
-
-
 
  

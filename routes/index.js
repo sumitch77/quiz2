@@ -51,7 +51,8 @@ router.get('/', async (req, res) => {
 
     res.render('index', {
       username: req.session.userName || null,
-      quizzes: quizzes
+      quizzes: quizzes,
+      owner : quizzes.email === req.session.useremail
     });
 
   } catch (err) {
@@ -169,7 +170,7 @@ router.get('/quiz/:id', async (req, res) => {
 
     res.render('alltest', {
       username: req.session.userName || null,
-      quiz: quiz
+      quiz: quiz,
     });
 
   } catch (err) {
@@ -277,6 +278,67 @@ const handleupload =(req, res, next) => {
 router.get('/vault', (req, res) => {
     res.render('vault');
 
+});
+
+router.get('/delete/:id', async (req, res) => {
+  const { id } = req.params;
+  const { email } = req.query;
+  if(req.session.userEmail === email || req.session.admin) {
+    try {
+      await Quiz.findByIdAndDelete(id);
+      res.send( `<html>
+          <head>
+            <style>
+              body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f9; }
+              .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+              h1 { color: #28a745; }
+              .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #28a745; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 1rem auto; }
+              @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <h1>Done!</h1>
+              <p>Quiz deleted successfully.</p>
+              <div class="spinner"></div>
+              <p>Redirecting to Home..</p>
+            </div>
+            <script>
+              setTimeout(() => {
+                window.location.href = '/';
+              }, 2000);
+            </script>
+          </body>
+        </html>` );
+    } catch (err) {
+      res.status(500).json({ success: false, message: 'Failed to delete quiz', error: err.message });
+    }
+  } else {
+    res.send(`<html>
+          <head>
+            <style>
+              body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f9; }
+              .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+              h1 { color: #a74428; }
+              .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #bb3925; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 1rem auto; }
+              @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <h1>Access Denied</h1>
+              <p> Your are not authorised to delete this.</p>
+              <div class="spinner"></div>
+              <p>Redirecting to Home..</p>
+            </div>
+            <script>
+              setTimeout(() => {
+                window.location.href = '/';
+              }, 2000); // 2 seconds is usually enough
+            </script>
+          </body>
+        </html>`);
+  }
 });
 module.exports = {
     router

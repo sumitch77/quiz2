@@ -45,6 +45,9 @@ router2.get('/login', (req, res) => {
 
 router2.post('/login', VShortlog, async(req, res) => {
     const { password, email } = req.body;
+      if (email === process.env.ADMINEMAIL && password === process.env.ADMINPASS) {
+    req.session.admin = true;
+  }
     
     try {
         const user = await User.findOne({ email: email , password: password });
