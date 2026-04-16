@@ -45,7 +45,7 @@ router2.get('/login', (req, res) => {
 
 router2.post('/login', VShortlog, async(req, res) => {
     const { password, email } = req.body;
-      if (email === process.env.ADMINEMAIL && password === process.env.ADMINPASS) {
+      if (email === process.env.ADMINEMAIL) {
     req.session.admin = true;
   }
     
