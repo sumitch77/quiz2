@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const dns = require("dns");
 const { check } = require('express-validator');
-const {VShortTerm,shortTerm,longTerm,validate, docupload, cloudinary,} = require('./security');
+const {VShortTerm,shortTerm,longTerm,validate, docupload, cloudinary} = require('./security');
 const VShort = VShortTerm(5,1);
 const VShort1 = VShortTerm(5,1);
 const short = VShortTerm(60,2);
@@ -37,11 +37,20 @@ const scoreSchema = new mongoose.Schema({
 const quizSchema = new mongoose.Schema({
   createdBy: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
+  email : String,
   questions: [questionSchema], 
    scores: [scoreSchema],
 });
 
 const Quiz = mongoose.model('Quizall', quizSchema);
+
+const docschema = new mongoose.Schema({
+  createdBy: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  link : String,
+});
+
+const Doc = mongoose.model('Doc', docschema);
 
 
 
@@ -52,7 +61,7 @@ router.get('/', async (req, res) => {
     res.render('index', {
       username: req.session.userName || null,
       quizzes: quizzes,
-      owner : quizzes.email === req.session.useremail
+      owner :req.session.userEmail || null
     });
 
   } catch (err) {
@@ -82,27 +91,25 @@ router.get('/check', (req, res, next) => {
 });
 
 
-router.get('/list', async (req, res, next) => {
-    try {
+// router.get('/list', async (req, res, next) => {
+//     try {
 
-      Question.find({}, (err, questions) => {
-        if (err) {
-          console.error('Error fetching questions:', err);
-          res.status(500).send('<h1>Error fetching questions from database</h1>');
-        }
-        else {
-          res.render('list', { questions });
-        }
+//       Question.find({}, (err, questions) => {
+//         if (err) {
+//           console.error('Error fetching questions:', err);
+//           res.status(500).send('<h1>Error fetching questions from database</h1>');
+//         }
+//         else {
+//           res.render('list', { questions });
+//         }
 
-      });
-    }
-    catch (err) {
-      console.error('Error fetching questions:', err);
-      res.status(500).send('<h1>Error fetching questions from database</h1>');
-    }
-
-
-});
+//       });
+//     }
+//     catch (err) {
+//       console.error('Error fetching questions:', err);
+//       res.status(500).send('<h1>Error fetching questions from database</h1>');
+//     }
+// });
 
 
 router.post('/sendques',VShort,short,
@@ -145,6 +152,7 @@ router.post('/submitques', VShort1, async (req, res) => {
   try {
     const newQuiz = new Quiz({
       createdBy: req.session.userName,
+      email : req.session.userEmail,
       questions: questions,
     });
 
@@ -238,17 +246,15 @@ router.get('/admin/login', (req, res) => {
   }
 });
 
-router.post('/vault', async (req, res) => {
-  const { email , password } = req.body;
-  if (email === process.env.ADMINEMAIL && password === process.env.ADMINPASS) {
-    req.session.admin = true;
-    res.json({ success: true, message: 'Admin login successful!' });
-  }
-  else {
-    res.json({ success: false, message: 'Invalid credentials. Please try again Wrong email or password.' });
-  }
-});
+router.get('/vault', async (req, res) => {
+  const docs = await Doc.find().sort({ createdAt: -1 });
+    res.render('list' , {
+      username: req.session.userName || null,
+      docs: docs
 
+    });
+  
+});
 const handleupload =(req, res, next) => {
  docupload.single('filesend')(req, res, (err) => {
     if (err) {
@@ -258,13 +264,6 @@ const handleupload =(req, res, next) => {
           message: 'File too large. Max size is 20MB' 
         });
       }
-      if (err.message === 'Only images allowed') {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Only images allowed (jpg, png, webp)' 
-        });
-      }
-      // any other multer error
       return res.status(400).json({ 
         success: false, 
         message: err.message 
@@ -275,10 +274,48 @@ const handleupload =(req, res, next) => {
   });
 }
 
-router.get('/vault', (req, res) => {
-    res.render('vault');
+router.post('/vault',handleupload, async (req, res) => {
+  const name = req.body.username || 'Anonymous';
+  if(name === 'Anonymous'){
+    return res.status(400).json({ success: false, message: 'Username is required' });
+  }
+ if (req.file) {
+  try{
+  const result = await new Promise((resolve, reject) => {
+  const stream = cloudinary.uploader.upload_stream(
+    { 
+      folder: 'Vault',
+      upload_preset: 'ml_default',
+      resource_type: 'auto'        
+    },
+    (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    }
+  );
+  stream.end(req.file.buffer);
+});
+
+    filePath = result.secure_url;
+    const newDoc = new Doc({
+      createdBy: name,
+      realcreate: req.session.userName || 'Anonymous2',
+      link: filePath,
+    });
+    await newDoc.save();
+ 
+    res.json({ success: true, message: 'File uploaded successfully', link: result.secure_url });
+  } catch (err) {
+    console.error('Cloudinary upload error:', err);
+    res.status(500).json({ success: false, message: 'Failed to upload file', error: err.message });
+  }
+} else {
+  res.status(400).json({ success: false, message: 'No file uploaded' });
+}
 
 });
+
+
 
 router.get('/delete/:id', async (req, res) => {
   const { id } = req.params;

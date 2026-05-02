@@ -28,6 +28,7 @@ const upload = multer({ storage,
   limits: { fileSize: 5 * 1024 * 1024 },
  });
 
+
  const docstorage = multer.memoryStorage();
   const docupload = multer({ docstorage,
     limits: { fileSize: 20 * 1024 * 1024 },

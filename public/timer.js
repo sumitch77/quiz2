@@ -14,6 +14,7 @@ let deleteBtn = document.querySelector('.delete');
 let message = document.getElementById('message');
 let delbt = document.querySelector('#delbt');
 let img = document.querySelector('#img');
+let vault = document.querySelector('#vault');
 
   menuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -81,6 +82,10 @@ imgin.addEventListener('click', () => {
 cut.addEventListener('click', () => {
   warn.style.display = 'none';
   cut.style.display = 'none';
+});
+
+vault.addEventListener('click', () => {
+  window.location.href = '/vault';
 });
 
  
