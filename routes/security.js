@@ -1,7 +1,7 @@
 const express = require('express'); 
 const { check , validationResult} = require('express-validator');
 const { link } = require('fs');
-let ratelimit = require('express-rate-limit');
+let {ratelimit , ipKeyGenerator} = require('express-rate-limit');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const crypto = require('crypto');
@@ -65,7 +65,7 @@ const EmailLimiter = ratelimit({
     }
     const fingerprint = [
       normalizedEmail,
-      req.ip,
+      ipKeyGenerator(req.ip),
       req.headers['user-agent'],
       req.headers['accept-language']
     ].join('###');
