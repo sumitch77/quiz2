@@ -1,7 +1,7 @@
 const express = require('express'); 
 const { check , validationResult} = require('express-validator');
 const { link } = require('fs');
-let {ratelimit , ipKeyGenerator} = require('express-rate-limit');
+let {rateLimit , ipKeyGenerator} = require('express-rate-limit');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const crypto = require('crypto');
@@ -37,7 +37,7 @@ const upload = multer({ storage,
 
 
 
-const shortTermLimiter = ratelimit({
+const shortTermLimiter = rateLimit({
     windowMs: 10 * 1000,
     limit: 2, 
     standardHeaders: true,
@@ -50,7 +50,7 @@ const shortTermLimiter = ratelimit({
     }
 });
 
-const EmailLimiter = ratelimit({
+const EmailLimiter = rateLimit({
     windowMs: 10 * 60 * 1000,
     limit: 5, 
     standardHeaders: true,
@@ -81,7 +81,7 @@ const EmailLimiter = ratelimit({
 });
 
 
-const TimeLimiter = ratelimit({
+const TimeLimiter = rateLimit({
     windowMs: 5 * 1000,
     limit: 1, 
     standardHeaders: true,
@@ -94,7 +94,7 @@ const TimeLimiter = ratelimit({
     }
 });
 
-const VaultLimiter = ratelimit({
+const VaultLimiter = rateLimit({
     windowMs: 60 *60* 1000,
     limit: 5, 
     standardHeaders: true,
