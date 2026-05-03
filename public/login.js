@@ -4,28 +4,6 @@ let email = document.getElementById('email');
 let message = document.getElementById('message');
 let verbtn = document.getElementById('verbtn');
 let warn = document.getElementById('warn');
-  
-function startCountdown(unlockTime) {
-     verbtn.disabled = true;
-
-    const timer = setInterval(() => {
-        const now = Date.now();
-        const distance = unlockTime - now;
-        const seconds = Math.ceil(distance / 1000);
-
-        if (distance <= 0) {
-           
-            clearInterval(timer);
-            verbtn.disabled = false;
-             message.innerText = '';
-             warn.innerText= message.innerText;
-            localStorage.removeItem('resendUnlock');
-        } else {
-           
-            message.innerText = `Please wait ${seconds} seconds before trying again.`; ;
-        }
-    }, 1000);
-}
 
  verbtn.addEventListener('click', async (event) => {
   event.preventDefault();  
@@ -44,9 +22,6 @@ function startCountdown(unlockTime) {
     warn.innerText = message.innerText;
         warn.style.display= 'none';
     },5000);
-        const unlockTime = Date.now() + 5000; 
-       localStorage.setItem('resendUnlockTime', unlockTime);
-        startCountdown(unlockTime);
         return;
     }
     if(response.status===400){

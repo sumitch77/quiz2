@@ -8,31 +8,6 @@ let resetbtn = document.getElementById('resetbtn');
 let message = document.getElementById('message');
 let warn = document.getElementById('warn');
 
-function startCountdown(unlockTime) {
-     verbtn.disabled = true;
-     sendcode.disabled= true;
-     resetbtn.disabled= true;
-
-    const timer = setInterval(() => {
-        const now = Date.now();
-        const distance = unlockTime - now;
-        const seconds = Math.ceil(distance / 1000);
-
-        if (distance <= 0) {
-           
-            clearInterval(timer);
-            verbtn.disabled = false;
-            sendcode.disabled=false;
-            resetbtn.disabled=false;
-            verbtn.innerText = 'Resend';
-             message.innerText = '';
-            localStorage.removeItem('resendUnlock');
-        } else {
-           
-            message.innerText =`Please wait ${seconds} seconds before trying again.`;
-        }
-    }, 1000);
-}
 
 
 sendcode.addEventListener('click', async (e) => {
@@ -53,20 +28,7 @@ sendcode.addEventListener('click', async (e) => {
     warn.innerText = message.innerText;
         warn.style.display= 'none';
     },5000);
-        let unlockTime;
-        if(data.total === 600){
-         unlockTime = Date.now() + 600000; 
-        }
-         if(data.total === 60){
-         unlockTime = Date.now() + 60000; 
-        }
-         if(data.total === 5){
-          unlockTime = Date.now() + 5000; 
-        }
-        localStorage.setItem('resendUnlock', unlockTime);
-
-        startCountdown(unlockTime);
-        return;
+        
     }
     if(response.status===400){
         const data = await response.json();
@@ -127,10 +89,6 @@ verbtn.addEventListener('click', async (e) => {
        if(response.status===429){
         const data = await response.json();
         message.innerText = data.message;
-         const unlockTime = Date.now() + 5000; 
-        localStorage.setItem('resendUnlock', unlockTime);
-
-        startCountdown(unlockTime);
         
         return;
     }
@@ -148,8 +106,6 @@ verbtn.addEventListener('click', async (e) => {
     }
     const data = await response.json();
     if (data.success) {
-        localStorage.removeItem('codesent');
-         localStorage.removeItem('resendUnlock');
         message.innerHTML = data.message || 'Code verified. You can now reset your password.';
         warn.innerText = message.innerText;
         warn.style.display= 'block';
@@ -195,10 +151,6 @@ e.preventDefault();
        if(response.status===429){
         const data = await response.json();
         message.innerText = data.message;
-         const unlockTime = Date.now() + 5000; 
-        localStorage.setItem('resendUnlock', unlockTime);
-
-         startCountdown(unlockTime);
         
         return;
     }
@@ -216,7 +168,7 @@ e.preventDefault();
     }
     const data = await response.json();
     if (data.success) {
-         localStorage.removeItem('resendUnlock');
+    
         message.innerHTML = data.message || 'Password reset successful!';
         warn.innerText = message.innerText;
         warn.style.display= 'block';

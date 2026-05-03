@@ -37,30 +37,6 @@ fileInput.addEventListener('change', function () {
     reader.readAsDataURL(file);
   });
 
-function startCountdown(unlockTime) {
-     verbtn.disabled = true;
-    sendcode.disabled= true;
-     signupbtn.disabled= true;
-
-    const timer = setInterval(() => {
-        const now = Date.now();
-        const distance = unlockTime - now;
-        const seconds = Math.ceil(distance / 1000);
-
-        if (distance <= 0) {
-           
-            clearInterval(timer);
-            verbtn.disabled = false;
-             sendcode.disabled=false;
-            signupbtn.disabled=false;
-            sendcode.innerText = 'Resend';
-            message.innerText = '';
-            localStorage.removeItem('resendUnlock');
-        } else {
-            message.innerText =`Please wait ${seconds} seconds before trying again.`;
-        }
-          }, 1000);
-}
 
  let filesend;
  sendcode.addEventListener('click', async (event) => {
@@ -84,18 +60,6 @@ function startCountdown(unlockTime) {
           warn.innerText = '';
         warn.style.display= 'none';
         },5000)
-        let unlockTime;
-          if(data.total === 600){
-        unlockTime = Date.now() + 600000; 
-        }
-         if(data.total === 60){
-         unlockTime = Date.now() + 60000; 
-        }
-         if(data.total === 5){
-         unlockTime = Date.now() + 5000; 
-        }
-        localStorage.setItem('resendUnlock', unlockTime);
-         startCountdown(unlockTime);
         return;
     }
     if(response.status===400){
@@ -120,8 +84,7 @@ function startCountdown(unlockTime) {
         warn.style.display= 'none';
     },5000);
     if(data.success){
-      localStorage.setItem('codesend','true'); 
-      localStorage.removeItem('resendUnlock');      
+           
     sendcode.innerText='Resend';
       
     }
@@ -155,12 +118,6 @@ verbtn.addEventListener('click', async () => {
           warn.innerText = message.innerText;
         warn.style.display= 'none';
         },5000)
-        const unlockTime = Date.now() + 5000; 
-        
-        localStorage.setItem('resendUnlock', unlockTime);
-         startCountdown(unlockTime);
-        
-        return;
        }
     
     if(response.status===400){
@@ -176,7 +133,6 @@ verbtn.addEventListener('click', async () => {
         return;
     }
     const data = await response.json();
-    localStorage.removeItem('codesend');
     message.innerText = data.message;
     warn.innerText = message.innerText;
         warn.style.display= 'block';
@@ -185,7 +141,6 @@ verbtn.addEventListener('click', async () => {
     warn.innerText = message.innerText;
         warn.style.display= 'none';
     },5000);
-    localStorage.removeItem('resendUnlock');
     } catch (err) {
     message.innerText='Unable to connect to server';
     warn.innerText = message.innerText;
@@ -224,10 +179,7 @@ signupbtn.addEventListener('click', async (e) => {
           warn.innerText = '';
         warn.style.display= 'none';
         },5000)
-        const unlockTime = Date.now() + 5000; 
-        
-        localStorage.setItem('resendUnlock', unlockTime);
-         startCountdown(unlockTime);
+       
         return;
        
     }
@@ -259,7 +211,7 @@ signupbtn.addEventListener('click', async (e) => {
             password.value = '';
             confirmpass.value = '';
             code.value = '';
-            localStorage.removeItem('resendUnlock')
+            
             window.location.href = '/';
         }
 

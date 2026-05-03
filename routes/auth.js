@@ -8,15 +8,10 @@ const {Resend} = require('resend');
 const resendClient = new Resend(process.env.TOKEN);
 let verificationCodes= new Map();
 const { check } = require('express-validator');
-const {VShortTerm,shortTerm,longTerm,validate,} = require('./security');
-const VShort = VShortTerm(5,1);
-const VShortlog = VShortTerm(5,1);
-const VShortver = VShortTerm(5,1);
-const VShortsign = VShortTerm(5,1);
-const short = shortTerm(60,2);
-const long = longTerm(600,5);
+const { EmailLimiter , TimeLimiter ,validate,} = require('./security');
 const quesid = new Map();
 const {upload, cloudinary} = require('./security');
+const validate2 = require('deep-email-validator');
 
 
 const userSchema = new mongoose.Schema({
@@ -28,7 +23,7 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('user', userSchema);
 
-router2.get('/logout', (req, res) => {
+router2.get('/logout', TimeLimiter,(req, res) => {
   req.session.destroy(err => {
     if (err) {
       return res.status(500).json({ success: false, message: 'An error occurred during logout', error: err.message });
@@ -43,12 +38,25 @@ router2.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/login.html'));
 });
 
-router2.post('/login', VShortlog, async(req, res) => {
-    const { password, email } = req.body;
+router2.post('/login', TimeLimiter, async(req, res) => {
+    let { password, email } = req.body;
+    email = email.toLowerCase().trim();
+   
       if (email === process.env.ADMINEMAIL) {
     req.session.admin = true;
   }
-    
+const result = await validate2.validate({
+  email: email,
+  validateSMTP: false, 
+});
+
+  if (!result.valid) {
+    return res.status(400).json({
+      success: false,
+      message: "This email address does not exist",
+      reason: result.reason 
+    });
+  }
     try {
         const user = await User.findOne({ email: email , password: password });
          if (user) {
@@ -80,15 +88,28 @@ router2.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, '../views/signup.html'));
 });
 
-router2.post('/signup',long,short,VShort,
+router2.post('/signup',EmailLimiter,TimeLimiter,
   [ check('email')
     .isEmail().withMessage('Invalid email format')
     .normalizeEmail() ],
   validate,
   async (req, res, next) => {
 
-  const { email} = req.body;
+  let { email} = req.body;
+  email = email.toLowerCase().trim();
   const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+  const result = await validate2.validate({
+    email: email,
+    validateSMTP: false
+  });
+
+  if (!result.valid) {
+    return res.status(400).json({
+      success: false,
+      message: "This email address does not exist.",
+      reason: result.reason 
+    });
+  }
 
   const verificationCode = Math.floor(100000 + Math.random() * 900000);
   verificationCodes.set(email, verificationCode);
@@ -117,8 +138,9 @@ router2.post('/signup',long,short,VShort,
 });
 
 
-router2.post('/verify2',VShortver, (req, res) => {
-  const {code, email} = req.body; 
+router2.post('/verify2', TimeLimiter, (req, res) => {
+  let {code, email} = req.body; 
+  email = email.toLowerCase().trim();
   const stored = verificationCodes.get(email);
   if (code == stored) {
 req.session.verified = true;
@@ -157,7 +179,7 @@ const handleupload =(req, res, next) => {
   });
 }
 
-router2.post('/signupco',VShortsign,handleupload,
+router2.post('/signupco',TimeLimiter,handleupload,
   [ check('email')
       .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Invalid email format')
@@ -181,7 +203,8 @@ router2.post('/signupco',VShortsign,handleupload,
   
     
 async (req, res) => {
-  const { name1 , phone , email , password, confirmpass} = req.body;
+  let { name1 , phone , email , password, confirmpass} = req.body;
+  email = email.toLowerCase().trim();
   let filePath = null;
    if (req.file) {
     const result = await new Promise((resolve, reject) => {

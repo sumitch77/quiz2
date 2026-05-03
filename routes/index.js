@@ -6,11 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const dns = require("dns");
 const { check } = require('express-validator');
-const {VShortTerm,shortTerm,longTerm,validate, docupload, cloudinary} = require('./security');
-const VShort = VShortTerm(5,1);
-const VShort1 = VShortTerm(5,1);
-const short = VShortTerm(60,2);
-const long = VShortTerm(600,5);
+const { TimeLimiter,VaultLimiter,validate, docupload, cloudinary} = require('./security');
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 
@@ -74,7 +70,6 @@ router.get('/index', (req, res,next) => {
        if(req.session.userId&& req.session.userName){
         req.session.randomid = (req.session.userId+req.session.userName+Date.now()).toString();
          req.session.questions = [];
-        console.log(`User ${req.session.randomid} is accessing the setTest page.`);
       res.sendFile(path.join(__dirname, '../views/setTest.html'));
   }
   else {
@@ -82,7 +77,7 @@ router.get('/index', (req, res,next) => {
   }
   });
 
-router.get('/check', (req, res, next) => {
+router.get('/check',  (req, res, next) => {
   if(req.session.userId && req.session.userName) {
     res.json({ success: true , loggedIn: true, username: req.session.userName, useremail : req.session.userEmail });
   } else {
@@ -112,7 +107,7 @@ router.get('/check', (req, res, next) => {
 // });
 
 
-router.post('/sendques',VShort,short,
+router.post('/sendques',TimeLimiter,
  [ check('q1').notEmpty().withMessage("please Enter question"),
   check('a1').notEmpty().withMessage("please Enter option"),
   check('a2').notEmpty().withMessage("please Enter option"),
@@ -141,7 +136,7 @@ router.post('/sendques',VShort,short,
 
 });
 
-router.post('/submitques', VShort1, async (req, res) => {
+router.post('/submitques', TimeLimiter, async (req, res) => {
   
     const questions = req.session.questions;
 
@@ -207,7 +202,7 @@ router.get('/quiz/:id/leaderboard', async (req, res) => {
   }
 });
 
-router.post('/quiz/:id/score', async (req, res) => {
+router.post('/quiz/:id/score',TimeLimiter, async (req, res) => {
   try {
     const { score, total } = req.body;
 
@@ -230,7 +225,7 @@ router.post('/quiz/:id/score', async (req, res) => {
   }
 });
 
-router.get('/profile', (req, res) => {
+router.get('/profile',  (req, res) => {
   if (req.session.userId && req.session.userName) {
     res.json({ success: true, username: req.session.userName, useremail: req.session.userEmail , photourl : req.session.photourl });
   } else {
@@ -274,7 +269,7 @@ const handleupload =(req, res, next) => {
   });
 }
 
-router.post('/vault',handleupload, async (req, res) => {
+router.post('/vault',VaultLimiter,TimeLimiter,handleupload, async (req, res) => {
   const name = req.body.username || 'Anonymous';
   if(name === 'Anonymous'){
     return res.status(400).json({ success: false, message: 'Username is required' });
@@ -303,6 +298,7 @@ router.post('/vault',handleupload, async (req, res) => {
       link: filePath,
     });
     await newDoc.save();
+   
  
     res.json({ success: true, message: 'File uploaded successfully', link: result.secure_url });
   } catch (err) {
@@ -317,7 +313,7 @@ router.post('/vault',handleupload, async (req, res) => {
 
 
 
-router.get('/delete/:id', async (req, res) => {
+router.get('/delete/:id',  async (req, res) => {
   const { id } = req.params;
   const { email } = req.query;
   if(req.session.userEmail === email || req.session.admin) {

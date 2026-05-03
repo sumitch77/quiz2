@@ -8,26 +8,38 @@ const resendClient = new Resend(process.env.TOKEN);
 let verCodes = new Map();
 const{ User} = require('./auth');
 const { check} = require('express-validator');
-const {VShortTerm , shortTerm, longTerm, validate } = require('./security');
-const VShort = VShortTerm(5,1);
-const VShortver = VShortTerm(5,1);
-const VShortres = VShortTerm(5,1);
-const short = shortTerm(60,2);
-const long= longTerm(600,5);
+const validate2  = require('deep-email-validator');
+const {TimeLimiter,EmailLimiter, validate } = require('./security');
+
 
 router3.get('/forgot', (req, res) => {
     req.session.verified2 = false;
     res.sendFile(path.join(__dirname, '../views/forgot.html'));
 });
 
-router3.post('/forgot',long, short,VShort, 
+router3.post('/forgot',EmailLimiter, TimeLimiter, 
     [ check('email')
         .isEmail().withMessage('Invalid email format')
         .normalizeEmail() ],
       validate,
       async (req, res) => {
     
-      const { email } = req.body;
+      let { email } = req.body;
+      email = email.toLowerCase().trim();
+      
+        const result = await validate2.validate({
+  email: email,
+  validateSMTP: false, 
+      });
+       
+
+  if (!result.valid) {
+    return res.status(400).json({
+      success: false,
+      message: "This email address does not exist.",
+      reason: result.reason 
+    });
+  }
     
       const verificationCode = Math.floor(100000 + Math.random() * 900000);
       verCodes.set(email, verificationCode);
@@ -57,8 +69,9 @@ router3.post('/forgot',long, short,VShort,
     }
 );
 
-router3.post('/forgotverify',VShortver, async (req, res) => {
-    const { email, code } = req.body;
+router3.post('/forgotverify',TimeLimiter, async (req, res) => {
+    let { email, code } = req.body;
+    email = email.toLowerCase().trim();
     const storedCode = verCodes.get(email);
     if (code == storedCode) {
         req.session.verified2 = true;
@@ -70,7 +83,7 @@ router3.post('/forgotverify',VShortver, async (req, res) => {
     }
 });
 
-router3.post('/resetpassword',VShortres,
+router3.post('/resetpassword',TimeLimiter,
    [ check('email')
         .isEmail().withMessage('Invalid email format')
         .normalizeEmail() ,
@@ -86,7 +99,8 @@ router3.post('/resetpassword',VShortres,
   ],validate,
 
   async (req, res) => {
-    const { newPassword , confirmPasswordValue, email} = req.body;
+    let { newPassword , confirmPasswordValue, email} = req.body;
+    email = email.toLowerCase().trim();
     const min = 5*60*1000;
     const isExpired = Date.now() - req.session.verifiedAt > min;
 
