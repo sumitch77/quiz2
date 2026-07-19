@@ -5,7 +5,7 @@ const { router } = require('./routes/index');
 const app = express();
 const mongoose = require('mongoose');
 const session = require('express-session');
-const mongostore = require('connect-mongodb-session')(session);
+const mongostore = require('connect-mongo');
 const dotenv = require('dotenv');
 const { router2 } = require('./routes/auth');
 const router3 = require('./routes/routeforgot');
@@ -31,10 +31,10 @@ app.use(cors({
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.set('views', path.join(__dirname, 'views'));
-const store = new mongostore({
-    uri: process.env.URL,
-    collection: 'sessions',
-});
+// const store = new mongostore({
+//     uri: process.env.URL,
+//     collection: 'sessions',
+// });
 app.set('trust proxy', 1);
 app.use(express.json());
 
@@ -42,8 +42,9 @@ app.use(session({
     secret: process.env.SESSION,
     resave: false,
     saveUninitialized: false,
-
-    store: store,
+    store: mongostore.create({ 
+        mongoUrl: process.env.MONGO_URL
+    }),
     cookie: { 
         httpOnly: true, 
         secure: true, 
@@ -57,7 +58,7 @@ app.use(passport.session());
 
 // Passport serialization & deserialization
 passport.serializeUser((user, done) => {
-    done(null, user._id);
+    done(null, user._id.toString());
 });
 
 passport.deserializeUser(async (id, done) => {
