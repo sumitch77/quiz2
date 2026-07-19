@@ -9,8 +9,11 @@ const mongostore = require('connect-mongodb-session')(session);
 const dotenv = require('dotenv');
 const { router2 } = require('./routes/auth');
 const router3 = require('./routes/routeforgot');
+const { router4 } = require('./routes/oauth');
 const multer = require('multer');
 const cors = require('cors');
+const passport = require('passport');
+const { User } = require('./routes/auth');
 
 dotenv.config();
 const allowedOrigins = [process.env.ALLOWED, process.env.THIRDALLOWED, process.env.FOURTHALLOWED];
@@ -20,7 +23,7 @@ app.use(cors({
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            callback(new Error('Blocked by CORS policy!'));
+          callback(null, false);
         }
     }
 }));
@@ -48,6 +51,24 @@ app.use(session({
     }
 }));
 
+// Passport initialization
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport serialization & deserialization
+passport.serializeUser((user, done) => {
+    done(null, user._id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+        done(null, user);
+    } catch (error) {
+        done(error, null);
+    }
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/uploads', express.static('uploads'));
@@ -55,6 +76,7 @@ app.use('/uploads', express.static('uploads'));
 app.use(router);
 app.use(router2);
 app.use(router3);
+app.use(router4);
 
 app.use((req, res, next) => {
     res.status(404).send('<h1>404 Page Not Found</h1>');

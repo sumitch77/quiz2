@@ -12,13 +12,16 @@ const { EmailLimiter , TimeLimiter ,validate,} = require('./security');
 const quesid = new Map();
 const {upload, cloudinary} = require('./security');
 const validate2 = require('deep-email-validator');
+const { type } = require('os');
 
 
 const userSchema = new mongoose.Schema({
     name1: { type: String, required: true },
-    phone: { type: Number, required: true },
+    phone: { type: Number },
     email: { type: String, required: true },
-    password: { type: String, required: true },
+    password: { type: String},
+    googleId:{type:String},
+    Gprofile:{type:String},
     // filesend : {type : String},
     standardfingerprint: { type: String },
     audiofingerprint: { type: String },
