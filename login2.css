@@ -1,0 +1,9 @@
+
+@import "tailwindcss";
+
+/* 
+  @media (max-width: 900px){
+    .page{ flex-direction:column; }
+    .left-panel{ flex:none; width:100%; padding:32px 20px; }
+    .right-panel{ flex:none; width:100%; height:320px; }
+  } */

@@ -10,8 +10,21 @@ const dotenv = require('dotenv');
 const { router2 } = require('./routes/auth');
 const router3 = require('./routes/routeforgot');
 const multer = require('multer');
+const cors = require('cors');
 
 dotenv.config();
+const allowedOrigins = [process.env.ALLOWED, process.env.THIRDALLOWED, process.env.FOURTHALLOWED];
+app.use(cors({
+   origin: function (origin, callback) {
+        
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Blocked by CORS policy!'));
+        }
+    }
+}));
+
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.set('views', path.join(__dirname, 'views'));
@@ -25,8 +38,14 @@ app.use(express.json());
 app.use(session({
     secret: process.env.SESSION,
     resave: false,
-    saveUninitialized: true,
-    store: store
+    saveUninitialized: false,
+
+    store: store,
+    cookie: { 
+        httpOnly: true, 
+        secure: true, 
+        maxAge: 7*24 * 60 * 60 * 1000 
+    }
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));

@@ -1,34 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password</title>
-    <link rel="stylesheet" href="/forgot.css">
-</head>
-<body>
-    <h1 id="head">Reset Password</h1>
-    <div id="warn"></div>
-    <br>
-    <form id="form">
-        <input type="email" name="email" id="email" autocomplete="email" placeholder="Enter your email">
-        <br><br>
-        <button type="submit" id="sendcode">Send Verification Code</button>
-        <br><br>
-        <input id="code" type="text" placeholder="Enter verification code" >
-        <br><br>
-         <button type="button" id="verbtn">Verify Code</button>
-        <br><br>
-        <input type="password" name="newPassword" id="newPassword" autocomplete="new-password" placeholder="New Password">
-        <br><br> 
-        <input type="password" name="confirmPass" id="confirmPass" autocomplete="new-password" placeholder="Confirm New Password">
-       <br><br> 
-        <button type="submit" id="resetbtn">Reset Password</button>
-        <br><br>
-        <div id="message"></div>
-    </form> 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reset Password</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/output.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <script src="/forgot.js"></script>
+</head>
+<body class="h-full bg-black text-white antialiased font-sans">
+
+
+  <div class="flex min-h-screen items-stretch w-full"> 
+    <!-- Left: Form Panel -->
+    <div class="flex-1 flex items-center justify-center bg-black pl-4">
+      <div class="w-full bg-[#0a0a0a] border border-[#1f1f1f] rounded-2xl p-8 sm:p-9">
+        
+        <h1 class="text-2xl font-semibold tracking-tight text-white mb-5.5">Reset Password</h1>
+
+        <!-- Tabs -->
+        <div class="flex gap-1 bg-[#141414] border border-[#1f1f1f] rounded-ebd p-1 mb-6">
+          <button class="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-md text-sm font-medium transition-all cursor-pointer bg-[#1967d3] text-white" id="msignup" type="button">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12.75c2.9 0 5.25-2.35 5.25-5.25S14.9 2.25 12 2.25 6.75 4.6 6.75 7.5 9.1 12.75 12 12.75zm0 2.25c-3.5 0-10.5 1.76-10.5 5.25v2.25h21v-2.25c0-3.49-7-5.25-10.5-5.25z"/></svg>
+            Reset Password
+          </button>
+         
+        </div>
+  <!--  Login Fields        -->
+
+  <div id="mainlogin" class="">
+   <div class="flex gap-3.5" >
+          <div class="flex-1 mb-4.5">
+            <label class="block text-xs font-medium text-[#d6d6d6] mb-1.5" for="email2">Email</label>
+            <input class="w-full bg-[#0a0a0a] border border-[#262626] rounded-lg py-3 px-3.5 text-white text-sm placeholder-[#6e6e6e] focus:border-[#1967d3] outline-none" id="email2" type="text" placeholder="Enter Email">
+          
+          <p id="email2-error"
+            class="text-xs text-red-400 mt-1 transition-all duration-200 opacity-0 transform -translate-y-1 pointer-events-none" >
+              </p>
+
+          </div>
+
+        </div>
+
+        <div class="mb-4.5">
+
+          <!-- <label class="block text-xs font-medium text-[#d6d6d6] mb-1.5" for="password2">Password</label>
+          <div class="relative">
+            <input class="w-full bg-[#0a0a0a] border border-[#262626] rounded-lg py-3 pl-3.5 pr-11 text-white text-sm outline-none placeholder-[#6e6e6e] focus:border-[#1967d3]" id="password2" type="password" placeholder="Enter password">
+            <button class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6e6e6e] cursor-pointer flex bg-none border-none p-0" type="button" id="eyetoggle" aria-label="Toggle password visibility">
+              <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          <p id="pass2-error"
+            class="text-xs text-red-400! mt-1 transition-all duration-200 opacity-0 hidden transform -translate-y-1 pointer-events-none" >
+              </p>
+            
+              </div> -->
+           </div>          
+
+         <button class="w-full bg-[#1967d3] hover:bg-[#1558b8] text-white border-none rounded-lg p-3.5 text-base font-semibold flex items-center justify-center gap-2 cursor-pointer mt-1.5 mb-5.5 transition-colors" id="finallogin" type="button">
+          Send Verification Code to your email
+           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <div id="message4" class="text-[15px] text-green-600 mt-1 transition-all duration-200 transform -translate-y-1 font-bold z-10 rounded-2xl pl-4 hidden pointer-events-none"></div>
+          
+
+        <div class="text-center text-[#9a9a9a] text-xs mb-5">Or Login with</div>
+
+        <!-- Social Buttons -->
+        <div class="flex gap-3.5 mb-6">
+        
+          <button class="flex-1 flex items-center justify-center gap-2 bg-[#141414] border border-[#262626] rounded-lg p-2.5 text-[#dcdcdc] text-sm font-medium cursor-pointer" type="button">
+            <svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.5 12.23c0-.82-.07-1.42-.22-2.05H12v3.9h5.94a5.07 5.07 0 0 1-2.2 3.32l3.4 2.63c1.98-1.83 3.36-4.53 3.36-7.8z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.4-2.63c-.94.63-2.16 1.02-3.88 1.02-2.98 0-5.5-2.01-6.4-4.72H2.1v2.72C3.9 20.53 7.66 23 12 23z"/><path fill="#FBBC05" d="M5.6 14.01a6.5 6.5 0 0 1 0-4.02V7.27H2.1a11 11 0 0 0 0 9.46l3.5-2.72z"/><path fill="#EA4335" d="M12 5.25c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 1.98 14.96 1 12 1 7.66 1 3.9 3.47 2.1 7.27l3.5 2.72c.9-2.71 3.42-4.74 6.4-4.74z"/></svg>
+           Login with Google
+          </button>
+        </div>
+
+        <div class="text-center text-md text-[#9a9a9a] mb-4.5">Already have an account? <button class="text-[#3b82f6] no-underline font-medium hover:cursor-pointer" id="gotologin">Login</button></div>
+
+        <div class="text-[11px] leading-relaxed text-[#5c5c5c] text-center">By clicking 'Create Account/Google' above, you acknowledge that you have read and understood, and agree to our <a class="text-[#8a8a8a] underline" href="/Terms-of-Use">Terms &amp; Conditions</a> and <a class="text-[#8a8a8a] underline" href="/Privacy-Policy">Privacy Policy</a>.</div>
+      </div>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="flex-1 hidden md:block">
+      <img class="w-full h-full object-cover rounded-r-2xl block" src="/lock.png" alt="Login illustration">
+    </div>
     
+  </div>
+
+
+
+
+  <script src="/forgot.js">
+   
+  </script>
 </body>
 </html>

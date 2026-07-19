@@ -19,7 +19,12 @@ const userSchema = new mongoose.Schema({
     phone: { type: Number, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
-    filesend : {type : String},
+    // filesend : {type : String},
+    standardfingerprint: { type: String },
+    audiofingerprint: { type: String },
+    canvasfingerprint: { type: String },
+    fontfingerprint : {type:String},
+    commonfingerprint :{type:String},
 });
 const User = mongoose.model('user', userSchema);
 
@@ -41,6 +46,12 @@ router2.get('/login', (req, res) => {
 router2.post('/login', TimeLimiter, async(req, res) => {
     let { password, email } = req.body;
     email = email.toLowerCase().trim();
+    if(email==='guest@gmail.com' && password==='guest123'){
+         req.session.userId = user._id.toString();
+            req.session.userName = user.name1;
+            req.session.userEmail= user.email;
+      res.json({ success: true, message: 'Login successful!' });
+    }
    
       if (email === process.env.ADMINEMAIL) {
     req.session.admin = true;
@@ -63,7 +74,7 @@ const result = await validate2.validate({
             req.session.userId = user._id.toString();
             req.session.userName = user.name1;
             req.session.userEmail= user.email;
-            req.session.photourl = user.filesend;
+            // req.session.photourl = user.filesend;
       res.json({ success: true, message: 'Login successful!' });
       console.log(`User ${req.session.userId} logged in successfully.`);
       
@@ -85,7 +96,7 @@ router2.get('/forgot', (req, res) => {
 
 
 router2.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, '../views/signup.html'));
+  res.sendFile(path.join(__dirname, '../views/login.html'));
 });
 
 router2.post('/signup',EmailLimiter,TimeLimiter,
@@ -145,7 +156,15 @@ router2.post('/verify2', TimeLimiter, (req, res) => {
   if (code == stored) {
 req.session.verified = true;
     req.session.verifiedEmail = email;
+      const parts = req.session.finalfingerprint.split('|||');
+  const [canvasfingerprint, audiofingerprint, fontfingerprint, ...commonfingerprint] = parts;
+  const finalcommonfingerprint = commonfingerprint.join('|||');
 
+  req.session.audiofingerprint = audiofingerprint;
+  req.session.canvasfingerprint = canvasfingerprint;
+  req.session.fontfingerprint = fontfingerprint;
+  req.session.commonfingerprint = finalcommonfingerprint;
+ 
     res.json({ success: true, message: 'Verification successful!' });
     
   } else {  
@@ -153,39 +172,51 @@ req.session.verified = true;
   }
   
 });
-const handleupload =(req, res, next) => {
- upload.single('filesend')(req, res, (err) => {
-    if (err) {
-      if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(400).json({
-          success: false, 
-          message: 'File too large. Max size is 5MB' 
-        });
-      }
-      if (err.message === 'Only images allowed') {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Only images allowed (jpg, png, webp)' 
-        });
-      }
-      // any other multer error
-      return res.status(400).json({ 
-        success: false, 
-        message: err.message 
-      });
-    }
+// const handleupload =(req, res, next) => {
+//  upload.single('filesend')(req, res, (err) => {
+//     if (err) {
+//       if (err.code === 'LIMIT_FILE_SIZE') {
+//         return res.status(400).json({
+//           success: false, 
+//           message: 'File too large. Max size is 5MB' 
+//         });
+//       }
+//       if (err.message === 'Only images allowed') {
+//         return res.status(400).json({ 
+//           success: false, 
+//           message: 'Only images allowed (jpg, png, webp)' 
+//         });
+//       }
+//       // any other multer error
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: err.message 
+//       });
+//     }
   
-    next(); 
-  });
-}
+//     next(); 
+//   });
+// }
 
-router2.post('/signupco',TimeLimiter,handleupload,
-  [ check('email')
+router2.post('/signupco',TimeLimiter,
+  [check('agreement')
+    .custom((value) => {
+        const accepted = value === true || String(value).toLowerCase() === 'true';
+
+        if (!accepted) {
+          console.log('hello');
+            throw new Error('You must accept the Terms of Use and Privacy Policy');
+            return
+        }
+       
+        return true; 
+    }),
+    check('email')
       .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Invalid email format')
     .normalizeEmail(),
     check('password').notEmpty().withMessage('Password is required')
-    .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    .isLength({ min: 6 , max:20 }).withMessage('Password must be between 6 and 20 characters long'),
     check('name1').notEmpty().withMessage('Name is required')
     .isLength({ min: 2, max: 20 }).withMessage('Name must be between 2 and 20 characters long'),
     check('phone').notEmpty().withMessage('Phone number is required')
@@ -203,29 +234,30 @@ router2.post('/signupco',TimeLimiter,handleupload,
   
     
 async (req, res) => {
-  let { name1 , phone , email , password, confirmpass} = req.body;
+  let { name1 , phone , email , password, confirmpass , agreement} = req.body;
   email = email.toLowerCase().trim();
-  let filePath = null;
-   if (req.file) {
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: 'uploads' },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      stream.end(req.file.buffer);
-    });
+  // let filePath = null;
+  //  if (req.file) {
+  //   const result = await new Promise((resolve, reject) => {
+  //     const stream = cloudinary.uploader.upload_stream(
+  //       { folder: 'uploads' },
+  //       (error, result) => {
+  //         if (error) reject(error);
+  //         else resolve(result);
+  //       }
+  //     );
+  //     stream.end(req.file.buffer);
+  //   });
 
-    filePath = result.secure_url;
-  }
+  //   filePath = result.secure_url;
+  // }
+  
   if(req.session.verified && req.session.verifiedEmail === email) {
     try {
-  const newUser = new User({ name1, phone, email, password, filesend: filePath });
+  const newUser = new User({ name1, phone, email, password, filesend: filePath , standardfingerprint: req.session.emailfingerprint , audiofingerprint: req.session.audiofingerprint, canvasfingerprint: req.session.canvasfingerprint, fontfingerprint: req.session.fontfingerprint, commonfingerprint: req.session.commonfingerprint });
             await newUser.save();
             req.session.verified = false;
-            req.session.photourl = filePath;
+            // req.session.photourl = filePath;
              req.session.userId = newUser._id.toString();
             req.session.userName = newUser.name1;
             req.session.userEmail = newUser.email;

@@ -1,0 +1,118 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-page);
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+
+  --primary: #00e5ff;
+  --primary-hover: #00b8d4;
+  --primary-green: #00e676;
+  --text-dark: #e0f7fa;
+  --text-muted: #78909c;
+  --accent-red: #ff1744;
+  --bg-page: #0d1117;
+  --bg-card: #161b22;
+  --bg-nav: #0d1117;
+  --border: rgba(0, 229, 255, 0.1);
+  --border-hover: rgba(0, 229, 255, 0.3);
+}
+
+h1 {
+  color: var(--primary);
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  letter-spacing: 1px;
+  text-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+}
+
+#intro,
+#intro2 {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.75rem;
+}
+
+#radio{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+#radio2 {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Hide the actual radio dot */
+input[type="radio"] {
+  display: none;
+}
+
+/* Style the label as a pill/card */
+input[type="radio"] + label {
+  display: inline-block;
+  padding: 0.6rem 1.6rem;
+  border-radius: 10%;
+  border: 1px solid var(--border);
+  color: var(--text-dark);
+  background-color: var(--bg-card);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  width: fit-content;
+  min-width: 160px;
+  text-align: center;
+}
+
+input[type="radio"] + label:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: rgba(0, 229, 255, 0.04);
+  box-shadow:
+    0 0 8px rgba(0, 229, 255, 0.35),
+    0 0 20px rgba(0, 229, 255, 0.15),
+    inset 0 0 6px rgba(0, 229, 255, 0.05);
+}
+
+input[type="radio"]:checked + label {
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  background-color: rgba(0, 229, 255, 0.06);
+  box-shadow: none;
+}
+
+#submit {
+  padding: 0.65rem 2.5rem;
+  background-color: var(--primary);
+  color: var(--bg-page);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.5px;
+}
+
+#submit:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.35);
+}
+
+#submit:active {
+  transform: scale(0.97);
+}

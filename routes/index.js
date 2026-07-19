@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
 const dns = require("dns");
+const crypto = require('crypto');
 const { check } = require('express-validator');
 const { TimeLimiter,VaultLimiter,validate, docupload, cloudinary} = require('./security');
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
@@ -51,6 +52,8 @@ const Doc = mongoose.model('Doc', docschema);
 
 
 router.get('/', async (req, res) => {
+         if(req.session.userId&& req.session.userName){
+
   try {
     const quizzes = await Quiz.find().sort({ createdAt: -1 });
 
@@ -64,6 +67,9 @@ router.get('/', async (req, res) => {
     console.error(err);
     res.status(500).send('Something went wrong');
   }
+}else{
+  res.redirect('/login');
+}
 });
 
 router.get('/index', (req, res,next) => {
@@ -76,6 +82,15 @@ router.get('/index', (req, res,next) => {
       res.redirect('/login');
   }
   });
+router.get('/Privacy-Policy', (req, res,next) => {
+       
+      res.sendFile(path.join(__dirname, '../public/privacy.html'));
+  });
+router.get('/Terms-of-Use', (req, res,next) => {
+       
+      res.sendFile(path.join(__dirname, '../public/terms.html'));
+  });
+ 
 
 router.get('/check',  (req, res, next) => {
   if(req.session.userId && req.session.userName) {
@@ -85,26 +100,24 @@ router.get('/check',  (req, res, next) => {
   }
 });
 
+router.post('/fingerprint', async (req, res) => {
+  const { fingerprint } = req.body;
+  req.session.finalfingerprint = fingerprint;
+  res.json({ success: true });
 
-// router.get('/list', async (req, res, next) => {
-//     try {
+  // const parts = fingerprint.split('|||');
+  // const [audiofingerprint, canvasfingerprint, fontfingerprint, ...commonfingerprint] = parts;
+  // const finalcommonfingerprint = commonfingerprint.join('|||');
 
-//       Question.find({}, (err, questions) => {
-//         if (err) {
-//           console.error('Error fetching questions:', err);
-//           res.status(500).send('<h1>Error fetching questions from database</h1>');
-//         }
-//         else {
-//           res.render('list', { questions });
-//         }
+  // req.session.audiofingerprint = audiofingerprint;
+  // req.session.canvasfingerprint = canvasfingerprint;
+  // req.session.fontfingerprint = fontfingerprint;
+  // req.session.commonfingerprint = finalcommonfingerprint;
+  // req.session.Bossfinalemailfingerprint = fingerprint;
 
-//       });
-//     }
-//     catch (err) {
-//       console.error('Error fetching questions:', err);
-//       res.status(500).send('<h1>Error fetching questions from database</h1>');
-//     }
-// });
+
+});
+
 
 
 router.post('/sendques',TimeLimiter,
@@ -118,6 +131,8 @@ router.post('/sendques',TimeLimiter,
  validate,
   
   async(req, res) => {
+           if(req.session.userId&& req.session.userName){
+
    
     const { q1, a1, a2, a3, a4, ans } = req.body;
     const spid = req.session.randomid;
@@ -133,10 +148,15 @@ router.post('/sendques',TimeLimiter,
         console.error('Error saving question:', err);
         res.status(500).json({ success: false, message: 'Failed to save question', error: err.message });
     } 
+  }else{
+    res.redirect('/login');
+  }
 
 });
 
 router.post('/submitques', TimeLimiter, async (req, res) => {
+         if(req.session.userId&& req.session.userName){
+
   
     const questions = req.session.questions;
 
@@ -160,10 +180,15 @@ router.post('/submitques', TimeLimiter, async (req, res) => {
     console.error(err);
     return res.status(500).json({ success: false, message: 'Failed to save quiz', error: err.message }); // ✅
   }
+}else{
+  res.redirect('/login');
+}
 });
 
 
 router.get('/quiz/:id', async (req, res) => {
+         if(req.session.userId&& req.session.userName){
+
   try {
     const quiz = await Quiz.findById(req.params.id);
 
@@ -180,9 +205,14 @@ router.get('/quiz/:id', async (req, res) => {
     console.error(err);
     res.status(500).send('Something went wrong');
   }
+}else{
+  res.redirect('/login');
+}
 });
 
 router.get('/quiz/:id/leaderboard', async (req, res) => {
+         if(req.session.userId&& req.session.userName){
+
   try {
     const quiz = await Quiz.findById(req.params.id);
 
@@ -200,9 +230,14 @@ router.get('/quiz/:id/leaderboard', async (req, res) => {
     console.error(err);
     res.status(500).send('Something went wrong');
   }
+}else{
+  res.redirect('/login');
+}
 });
 
 router.post('/quiz/:id/score',TimeLimiter, async (req, res) => {
+         if(req.session.userId&& req.session.userName){
+
   try {
     const { score, total } = req.body;
 
@@ -223,6 +258,9 @@ router.post('/quiz/:id/score',TimeLimiter, async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
+}else{
+  res.redirect('/login');
+}
 });
 
 router.get('/profile',  (req, res) => {
@@ -242,12 +280,17 @@ router.get('/admin/login', (req, res) => {
 });
 
 router.get('/vault', async (req, res) => {
+         if(req.session.userId&& req.session.userName){
+
   const docs = await Doc.find().sort({ createdAt: -1 });
     res.render('list' , {
       username: req.session.userName || null,
       docs: docs
 
     });
+  }else{
+    res.redirect('/login');
+  }
   
 });
 const handleupload =(req, res, next) => {
@@ -309,6 +352,16 @@ router.post('/vault',VaultLimiter,TimeLimiter,handleupload, async (req, res) => 
   res.status(400).json({ success: false, message: 'No file uploaded' });
 }
 
+});
+
+router.get('/upigen', (req, res) => {
+  
+    res.sendFile(path.join(__dirname, '../views/upigen.html'));
+  
+});
+
+router.post('/upigen', async (req, res) => {
+  const { app , type } = req.body;
 });
 
 

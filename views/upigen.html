@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPI fake ss generator</title>
+    <link href="upigen.css" rel="stylesheet">
+</head>
+<body>
+    <h1> UPI Fake SS Generator</h1>
+    <div id="intro">Which app would you like to generate a fake SS for?</div>
+    <div id="radio">
+        <input type="radio" id="phonepe" name="app" value="phonepe">
+        <label for="phonepe">PhonePe</label><br>
+        <input type="radio" id="paytm" name="app" value="paytm">
+        <label for="paytm">Paytm</label><br>
+        <input type="radio" id="gpay" name="app" value="gpay">
+        <label for="gpay">Google Pay</label><br>
+    </div>
+
+    <div id="intro2">What type of fake SS would you like to generate?</div>
+      <div id="radio2">
+        <input type="radio" id="pass" name="app2" value="pass">
+        <label for="pass">Payment Successful</label><br>
+        <input type="radio" id="fail" name="app2" value="fail">
+        <label for="fail">Payment Failed</label><br>
+    </div>
+    
+    <button id="submit">Submit</button>
+</body>
+
+<script>
+    let submit = document.querySelector('#submit');
+    submit.addEventListener('click',async () => {
+        let app = document.querySelector('input[name="app"]:checked').value;
+        let type = document.querySelector('input[name="app2"]:checked').value;
+        console.log(app, type);
+        const response = await fetch('/upigen', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ app, type })
+        });
+    });
+</script>
+</html>

@@ -1,10 +1,11 @@
 const express = require('express'); 
 const { check , validationResult} = require('express-validator');
 const { link } = require('fs');
-let {rateLimit , ipKeyGenerator} = require('express-rate-limit');
+let ratelimit = require('express-rate-limit');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const crypto = require('crypto');
+const ipaddr = require('ipaddr.js');
 
 
 cloudinary.config({
@@ -37,22 +38,38 @@ const upload = multer({ storage,
 
 
 
-const shortTermLimiter = rateLimit({
+
+const shortTermLimiter = ratelimit({
     windowMs: 10 * 1000,
-    limit: 2, 
+    max: 2,
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
-        res.status(400).json({
+        res.status(429).json({
             success: false,
             message: "Please wait a few seconds before clicking again.",
         });
     }
 });
 
-const EmailLimiter = rateLimit({
+
+async function getClientIp(req) {
+    let clientIp = req.ip; // Or req.socket.remoteAddress
+
+    if (ipaddr.isValid(clientIp)) {
+        const parsedIp = ipaddr.parse(clientIp);
+        
+        // If it's an IPv4 address mapped inside IPv6, convert it to standard IPv4
+        if (parsedIp.kind() === 'ipv6' && parsedIp.isIPv4MappedAddress()) {
+            clientIp = parsedIp.toIPv4Address().toString();
+        }
+    }
+
+    return clientIp;
+}
+const EmailLimiter = ratelimit({
     windowMs: 10 * 60 * 1000,
-    limit: 5, 
+    max: 5,
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req) => {
@@ -63,17 +80,20 @@ const EmailLimiter = rateLimit({
       const cleanUser = domain === 'gmail.com' ? user.replace(/\./g, '') : user;
       normalizedEmail = `${cleanUser}@${domain}`;
     }
+  getClientIp(req).then(clientIp => {
     const fingerprint = [
       normalizedEmail,
-      ipKeyGenerator(req.ip),
+      clientIp,
       req.headers['user-agent'],
       req.headers['accept-language']
     ].join('###');
+    req.session.emailfingerprint = fingerprint;
+    return req.session.finalfingerprint;
 
-    return crypto.createHash('sha256').update(fingerprint).digest('hex');
-  },
+  });
+},
     handler: (req, res) => {
-        res.status(400).json({
+        res.status(429).json({
             success: false,
             message: "Limit reached. Please wait 10 minutes before trying again.",
         });
@@ -81,54 +101,34 @@ const EmailLimiter = rateLimit({
 });
 
 
-const TimeLimiter = rateLimit({
-    windowMs: 5 * 1000,
-    limit: 1, 
+const TimeLimiter = ratelimit({
+    windowMs: 3 * 1000,
+    max: 1,
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
-        res.status(400).json({
+        res.status(429).json({
             success: false,
             message: "Processing your request. Please wait a few seconds before trying again.",
         });
     }
 });
 
-const VaultLimiter = rateLimit({
+const VaultLimiter = ratelimit({
     windowMs: 60 *60* 1000,
-    limit: 5, 
+    max: 5,
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req) => {
        return "overall_limit";
     },
     handler: (req, res) => {
-        res.status(400).json({
+        res.status(429).json({
             success: false,
             message: "Upload limit reached. Please wait 1 hour before trying again.",
         });
     }
 });
-// const longTerm =(sec,max)=>{
-//   return ratelimit({
-//   windowMs: 10 * 60 * 1000, // 10 minutes
-//   max: max,
-//   standardHeaders: true, 
-//     legacyHeaders: false,
-//   handler: (req, res) => {
-//     const resetTime = req.rateLimit.resetTime; 
-//     const secondsLeft = Math.ceil((resetTime - Date.now()) / 1000);
- 
-//     res.status(400).json({
-//       success: false,
-//       total : sec,
-//       message: " Your limit has reached ,Please Try again after 10 Minutes.",
-//       secondsLeft: secondsLeft,
-//     });
-//  }
-// });
-// }
-
 
 
 const validate = (req, res, next) => {
@@ -138,7 +138,7 @@ const validate = (req, res, next) => {
   }
   const extractedError = errors.array()[0].msg;
   
-  return res.status(400).json({
+  return res.status(429).json({
     success: false,
     message: extractedError,
   });
