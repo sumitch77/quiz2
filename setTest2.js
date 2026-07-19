@@ -5,7 +5,7 @@ const { router } = require('./routes/index');
 const app = express();
 const mongoose = require('mongoose');
 const session = require('express-session');
-const mongostore = require('connect-mongo');
+const {MongoStore }= require('connect-mongo');
 const dotenv = require('dotenv');
 const { router2 } = require('./routes/auth');
 const router3 = require('./routes/routeforgot');
@@ -42,7 +42,7 @@ app.use(session({
     secret: process.env.SESSION,
     resave: false,
     saveUninitialized: false,
-    store: mongostore({ 
+    store: new MongoStore({ 
         mongoUrl: process.env.MONGO_URL
     }),
     cookie: { 
@@ -84,7 +84,7 @@ app.use((req, res, next) => {
 });
 
  const port = 3069;
- mongoose.connect(process.env.URL).then(() => {
+ mongoose.connect(process.env.MONGO_URL).then(() => {
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
     });
