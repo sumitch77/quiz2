@@ -35,6 +35,15 @@ let message4 = document.querySelector('#message4');
 let gotologin = document.querySelector('#gotologin');
 let gotosignup = document.querySelector('#gotosignup');
 let agreement = document.querySelector('#agreement');
+let Gsignup = document.querySelector('#Gsignup');
+let Glogin = document.querySelector('#Glogin');
+
+Gsignup.addEventListener('click' , (e)=>{
+window.location.href = '/auth/google';
+});
+Glogin.addEventListener('click' , (e)=>{
+window.location.href = '/auth/google';
+});
 
 function toggleForms(showSignup) {
   if (!mainlogin || !mainsignup || !msignup || !mlogin) return;
