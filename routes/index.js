@@ -265,7 +265,7 @@ router.post('/quiz/:id/score',TimeLimiter, async (req, res) => {
 
 router.get('/profile',  (req, res) => {
   if (req.session.userId && req.session.userName) {
-    res.json({ success: true, username: req.session.userName, useremail: req.session.userEmail , photourl : req.session.photourl });
+    res.json({ success: true, username: req.session.userName, useremail: req.session.userEmail , photourl : req.session.profilepic });
   } else {
     res.json({ success: false, message: 'User not logged in' });
   }

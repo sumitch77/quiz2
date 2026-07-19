@@ -28,6 +28,7 @@ router4.get('/auth/google/callback',
         req.session.userName = req.user.name1;
         req.session.userId = req.user.googleId;
         req.session.UserEmail = req.user.email;
+        req.session.profilePic = req.user.Gprofile;
 
         req.session.save((err) => {
             if (err) {

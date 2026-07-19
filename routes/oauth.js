@@ -27,10 +27,16 @@ router4.get('/auth/google/callback',
     (req, res) => {
         req.session.userName = req.user.name1;
         req.session.userId = req.user.googleId;
-        req.session.userEmail = req.user.email;
+        req.session.UserEmail = req.user.email;
+        req.session.profilePic = req.user.Gprofile;
 
-       
-        res.redirect('/');
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error:', err);
+                return res.redirect('/login');
+            }
+            res.redirect('/');
+        });
     }
 );
 
