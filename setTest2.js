@@ -42,7 +42,7 @@ app.use(session({
     secret: process.env.SESSION,
     resave: false,
     saveUninitialized: false,
-    store: mongostore.create({ 
+    store: new mongostore({ 
         mongoUrl: process.env.MONGO_URL
     }),
     cookie: { 

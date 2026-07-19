@@ -25,6 +25,10 @@ router4.get('/auth/google/callback',
         session: true 
     }),
     (req, res) => {
+        req.session.userName = req.user.name1;
+        req.session.userId = req.user.googleId;
+        req.session.email = req.user.email;
+
        
         res.redirect('/');
     }
