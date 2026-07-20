@@ -97,6 +97,7 @@ toggleForms(true);
 
 
 
+
 function lockButton(button) {
   const originalClasses = button.className;
   button.dataset.originalClasses = originalClasses;
@@ -494,7 +495,25 @@ if(!agreement.checked){
         message3.classList.add('hidden');
 
     },5000);
+
         if (data.success) {
+                grecaptcha.ready(function() {
+      grecaptcha.execute('6LdP1VwtAAAAAHvsT_314e0rpmoDW0qvFySxuNmC', { action: 'signup' }).then(function(token) {
+        
+        
+        fetch('/captcha', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.querySelector('input[type="email"]').value,
+            token: token 
+          })
+        })
+        .then(res => res.json())
+        .then(data => console.log(data));
+        
+      });
+    });
             name1.value = '';
             phone.value = '';
             email.value = '';

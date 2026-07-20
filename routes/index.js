@@ -279,6 +279,35 @@ router.get('/admin/login', (req, res) => {
   }
 });
 
+router.post('/captcha',async(req,res)=>{
+  const { email, token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ success: false, message: "Missing reCAPTCHA token." });
+  }
+
+  try {
+  
+    const googleVerifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.CAPTCHA}&response=${token}`;
+    
+    const response = await fetch(googleVerifyUrl, { method: 'POST' });
+    const data = await response.json();
+
+    if (data.success && data.score >= 0.5 && data.action === 'signup') {
+      return res.json({ success: true, message: "Login successful!" });
+    } else {
+      console.log(data.challenge_ts);
+      return res.status(403).json({ 
+        success: false, 
+        message: "Captcha verification failed , Please try again" 
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Not your fault ,Internal verification error." });
+  }
+
+});
+
 router.get('/vault', async (req, res) => {
          if(req.session.userId&& req.session.userName){
 
