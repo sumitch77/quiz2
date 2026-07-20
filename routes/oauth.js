@@ -26,9 +26,10 @@ router4.get('/auth/google/callback',
     }),
     (req, res) => {
         req.session.userName = req.user.name1;
-        req.session.userId = req.user.googleId;
-        req.session.UserEmail = req.user.email;
-        req.session.profilePic = req.user.Gprofile;
+        req.session.userId = req.user._id;
+        req.session.googleId = req.user.googleId;
+        req.session.userEmail = req.user.email;
+        req.session.profilepic = req.user.Gprofile;
 
         req.session.save((err) => {
             if (err) {
@@ -67,7 +68,6 @@ passport.use(new GoogleStrategy({
             user = new User({
                 name1:name,
                 email: email.toLowerCase(),      
-
                 googleId: googleId,
                 Gprofile: profilePic,
                 // Automatically set legal agreement fields since they clicked your OAuth button
