@@ -254,8 +254,10 @@ async (req, res) => {
 
   //   filePath = result.secure_url;
   // }
-  
-  if(req.session.verified && req.session.verifiedEmail === email) {
+  if(!req.session.captcha){
+    return res.status(400).json({success: false, message: 'Captcha Verification failed , please try again' });
+  }
+  if(req.session.verified && req.session.verifiedEmail === email ) {
     try {
   const newUser = new User({ name1, phone, email, password, filesend: filePath , standardfingerprint: req.session.emailfingerprint , audiofingerprint: req.session.audiofingerprint, canvasfingerprint: req.session.canvasfingerprint, fontfingerprint: req.session.fontfingerprint, commonfingerprint: req.session.commonfingerprint });
             await newUser.save();

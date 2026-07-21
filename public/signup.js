@@ -1,3 +1,5 @@
+const { response } = require("express");
+
 let name1 = document.getElementById('name1');
 let phone = document.getElementById('phone');
 let email = document.getElementById('email');
@@ -431,6 +433,25 @@ if(!agreement.checked){
         confirmpass: confirmpass.value,
         agreement: agreement.checked
     };
+      grecaptcha.ready( async function() {
+      grecaptcha.execute('6LdP1VwtAAAAAHvsT_314e0rpmoDW0qvFySxuNmC', { action: 'signup' }).then(function(token) {
+        
+        
+        fetch('/captcha', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.querySelector('input[type="email"]').value,
+            token: token 
+          })
+        })
+        const data2 = await response.json();
+        if(!data2.success) {
+                return;
+        }   
+        
+      });
+    });
     try {
         const response = await fetch('/signupco', {
             method: 'POST',
@@ -497,23 +518,7 @@ if(!agreement.checked){
     },5000);
 
         if (data.success) {
-                grecaptcha.ready(function() {
-      grecaptcha.execute('6LdP1VwtAAAAAHvsT_314e0rpmoDW0qvFySxuNmC', { action: 'signup' }).then(function(token) {
-        
-        
-        fetch('/captcha', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: document.querySelector('input[type="email"]').value,
-            token: token 
-          })
-        })
-        .then(res => res.json())
-        .then(data => console.log(data));
-        
-      });
-    });
+              
             name1.value = '';
             phone.value = '';
             email.value = '';
