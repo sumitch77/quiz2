@@ -294,9 +294,14 @@ router.post('/captcha',async(req,res)=>{
     const data = await response.json();
 
     if (data.success && data.score >= 0.5 && data.action === 'signup') {
-      req.session.captcha = true;
-      return res.json({ success: true, message: "Login successful!" });
+      req.session.captcha = {
+        valid: true,
+        email,
+        issuedAt: Date.now()
+      };
+      return res.json({ success: true, message: "Captcha verification successful!" });
     } else {
+      req.session.captcha = null;
       console.log(data.challenge_ts);
       return res.status(403).json({ 
         success: false, 

@@ -254,14 +254,20 @@ async (req, res) => {
 
   //   filePath = result.secure_url;
   // }
-  if(!req.session.captcha){
+  const captcha = req.session.captcha;
+  const captchaIsValid = captcha && captcha.valid === true && captcha.email === email && typeof captcha.issuedAt === 'number' && (Date.now() - captcha.issuedAt) <= 3 * 60 * 1000;
+
+  if (!captchaIsValid) {
+    req.session.captcha = null;
     return res.status(400).json({success: false, message: 'Captcha Verification failed , please try again' });
   }
+
   if(req.session.verified && req.session.verifiedEmail === email ) {
     try {
   const newUser = new User({ name1, phone, email, password, filesend: filePath , standardfingerprint: req.session.emailfingerprint , audiofingerprint: req.session.audiofingerprint, canvasfingerprint: req.session.canvasfingerprint, fontfingerprint: req.session.fontfingerprint, commonfingerprint: req.session.commonfingerprint });
             await newUser.save();
             req.session.verified = false;
+            req.session.captcha = null;
             // req.session.photourl = filePath;
              req.session.userId = newUser._id.toString();
             req.session.userName = newUser.name1;

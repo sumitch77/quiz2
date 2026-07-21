@@ -424,7 +424,7 @@ if(!agreement.checked){
         return       
 
 }
-  newemail= email.value;
+  const newemail = email.value;
     const payload = {
         name1: name1.value,
         phone: phone.value,
@@ -433,26 +433,38 @@ if(!agreement.checked){
         confirmpass: confirmpass.value,
         agreement: agreement.checked
     };
-      grecaptcha.ready( async function() {
-      grecaptcha.execute('6LdP1VwtAAAAAHvsT_314e0rpmoDW0qvFySxuNmC', { action: 'signup' }).then(function(token) {
-        
-        
-        fetch('/captcha', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: document.querySelector('input[type="email"]').value,
-            token: token 
-          })
-        })
-        const data2 = await response.json();
-        if(!data2.success) {
-                return;
-        }   
-        
-      });
-    });
+
     try {
+        const token = await new Promise((resolve, reject) => {
+            grecaptcha.ready(() => {
+                grecaptcha.execute('6LdP1VwtAAAAAHvsT_314e0rpmoDW0qvFySxuNmC', { action: 'signup' })
+                    .then(resolve)
+                    .catch(reject);
+            });
+        });
+
+        const captchaResponse = await fetch('/captcha', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: newemail,
+                token
+            })
+        });
+
+        const data2 = await captchaResponse.json();
+        if (!data2.success) {
+            message3.innerText = data2.message || 'Captcha verification failed. Please try again.';
+            message3.classList.remove('hidden');
+            message3.classList.replace('text-green-600', 'text-red-600');
+            setTimeout(() => {
+                message3.innerText = '';
+                message3.classList.add('hidden');
+                message3.classList.replace('text-red-600', 'text-green-600');
+            }, 5000);
+            return;
+        }
+
         const response = await fetch('/signupco', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
