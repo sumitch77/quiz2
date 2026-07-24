@@ -1,4 +1,3 @@
-const { response } = require("express");
 
 let name1 = document.getElementById('name1');
 let phone = document.getElementById('phone');
