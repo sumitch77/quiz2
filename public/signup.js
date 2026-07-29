@@ -157,6 +157,8 @@ finallogin.addEventListener('click',async()=>{
    try {
         const response = await fetch('/login', {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+
             body: JSON.stringify({email:email2.value , password:pass2.value})
         });
            if(response.status===429){
