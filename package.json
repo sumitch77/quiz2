@@ -27,6 +27,7 @@
     "express-rate-limit": "^8.3.1",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.1",
+    "http-proxy-middleware": "^4.2.0",
     "ipaddr": "^0.1.0",
     "mongodb": "^7.1.0",
     "mongoose": "^9.3.1",

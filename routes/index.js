@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const { check } = require('express-validator');
 const { TimeLimiter,VaultLimiter,validate, docupload, cloudinary} = require('./security');
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
+const {createproxy} = require('http-proxy-middleware');
 
 
 const questionSchema = new mongoose.Schema({
@@ -78,15 +79,22 @@ router.get('/alltime' , (req,res,next)=>{
 
 });
 
-router.get('/aktu' , (req,res,next)=>{
-  res.redirect('https://university-resource-website.onrender.com');
-});
-router.get('/vedu' , (req,res,next)=>{
-  res.redirect('https://university-resource-website.onrender.com');
-});
-router.get('/vedu69' , (req,res,next)=>{
-  res.redirect('https://university-resource-website.onrender.com');
-});
+
+router.get('/aktu' , createproxy({
+  target : 'https://university-resource-website.onrender.com',
+  changeOrigin:true,
+  pathRewrite:{'^/aktu':''}
+}));
+router.get('/vedu' , createproxy({
+  target : 'https://university-resource-website.onrender.com',
+  changeOrigin:true,
+  pathRewrite:{'^/vedu':''}
+}));
+router.get('/vedu69' , createproxy({
+  target : 'https://university-resource-website.onrender.com',
+  changeOrigin:true,
+  pathRewrite:{'^/vedu69':''}
+}));
 
 router.get('/index', (req, res,next) => {
        if(req.session.userId&& req.session.userName){
