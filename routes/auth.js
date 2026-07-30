@@ -47,14 +47,18 @@ router2.get('/login', (req, res) => {
 });
 
 router2.post('/login', TimeLimiter, async(req, res) => {
+
     let { password, email } = req.body;
     email = email.toLowerCase().trim();
     if(email==='guest@gmail.com' && password==='guest123'){
-         req.session.userId = user._id.toString();
-            req.session.userName = user.name1;
-            req.session.userEmail= user.email;
-      res.json({ success: true, message: 'Login successful!' });
+         req.session.userId = "69d11107e772eed2c6b33c1f";
+            req.session.userName = "guest";
+            req.session.userEmail= email;
+
+     return res.json({ success: true, message: 'Login successful!' });
+
     }
+
    
       if (email === process.env.ADMINEMAIL) {
     req.session.admin = true;
@@ -77,17 +81,17 @@ const result = await validate2.validate({
             req.session.userId = user._id.toString();
             req.session.userName = user.name1;
             req.session.userEmail= user.email;
-            // req.session.photourl = user.filesend;
-      res.json({ success: true, message: 'Login successful!' });
+              req.session.photourl = user.Gprofile;
+     return res.json({ success: true, message: 'Login successful!' });
       console.log(`User ${req.session.userId} logged in successfully.`);
       
       
     } else {
-      res.json({ success: false, message: 'Invalid credentials. Please try again Wrong email or password.' });
+     return res.json({ success: false, message: 'Invalid credentials. Please try again Wrong email or password.' });
     }
     }catch (err) {
         console.log('Login error:', err);
-        res.status(500).json({ success: false, message: 'An error occurred during login', error: err.message });    
+      return  res.status(500).json({ success: false, message: 'An error occurred during login', error: err.message });    
     }
    
     });

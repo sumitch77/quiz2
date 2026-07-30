@@ -29,7 +29,7 @@ let mainsignup = document.querySelector('#mainsignup');
 let msignup = document.querySelector('#msignup');
 let mlogin = document.querySelector('#mlogin');
 let email2 = document.querySelector('#email2');
-let pass2 = document.querySelector('#pass2');
+let pass2 = document.querySelector('#password2');
 let finallogin = document.querySelector('#finallogin');
 let message4 = document.querySelector('#message4');
 let gotologin = document.querySelector('#gotologin');
@@ -76,32 +76,6 @@ if (gotologin) {
 }
 
 toggleForms(true);
-// const fileInput = document.getElementById('fileInput');
-// const avatarImg = document.getElementById('avatarImg');
-// const placeholder = document.getElementById('placeholder');
-// const overlay = document.getElementById('overlay');
-// const filename = document.getElementById('filename');
-// const tick = document.getElementById('tick');
-   
-// fileInput.addEventListener('change', function () {
-//     const file = this.files[0];
-//     if (!file) return;
- 
-//     const reader = new FileReader();
-//     reader.onload = function (e) {
-//       avatarImg.src = e.target.result;
-//       avatarImg.style.display = 'block';
-//       placeholder.style.display = 'none';
-//       overlay.classList.add('visible');
- 
-//       const name = file.name.length > 26 ? file.name.slice(0, 24) + '…' : file.name;
-//       filename.textContent = name;
-//       filename.classList.add('show');
- 
-//       tick.classList.add('show');
-//     };
-//     reader.readAsDataURL(file);
-//   });
 
 
 
@@ -150,14 +124,15 @@ button.classList.remove(
 
 
 
-finallogin.addEventListener('click',async()=>{
+finallogin.addEventListener('click',async(e)=>{
+    e.preventDefault();
   lockButton(finallogin);
 
  
    try {
         const response = await fetch('/login', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+                  headers: { 'Content-Type': 'application/json' },
 
             body: JSON.stringify({email:email2.value , password:pass2.value})
         });
@@ -165,23 +140,23 @@ finallogin.addEventListener('click',async()=>{
         const data = await response.json();
          if(!data.success){
         message4.classList.replace('text-green-600' , 'text-red-600');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
 
 
     }
           message4.innerText = data.message;
         message4.classList.remove('hidden');
         message4.classList.replace('text-green-600' , 'text-red-600');
-// $1.innerText = message4.innerText;
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
+
         setTimeout(()=>{
-// $1.innerText = '';
+
           message4.innerText="";
          message4.classList.add('hidden');
         message4.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
         },5000)
        
         return;
@@ -192,30 +167,33 @@ finallogin.addEventListener('click',async()=>{
         message4.innerText = data.message;
         message4.classList.remove('hidden');
         message4.classList.replace('text-green-600' , 'text-red-600');
-// $1.innerText = message4.innerText;
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
+
         setTimeout(()=>{
-// $1.innerText = '';
+
           message4.innerText="";
          message4.classList.add('hidden');
         message4.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
     },5000);
         return;
     }
         const data = await response.json();
         message4.innerHTML = data.message + (data.link ? `<a href="${data.link}">${' ' + data.actionText}</a>` : '');
-// $1.innerText = message4.innerText;
+        if(!data.success){
+                    message4.classList.replace('text-green-600' , 'text-red-600');
+
+        }
+
                  message4.classList.remove('hidden');
-        // message.classList.replace('text-green-600' , 'bg-red-600');
-// $1.classList.remove('hidden');
-        // warn.classList.replace('bg-red-600' , 'bg-green-600');
+      
      setTimeout(()=>{
     message4.innerText='';
-// $1.innerText = message4.innerText;
-// $1.classList.add('hidden');
+
+        message4.classList.replace( 'text-red-600' , 'text-green-600');
+
         message4.classList.add('hidden');
 
     },5000);
@@ -228,18 +206,18 @@ finallogin.addEventListener('click',async()=>{
 
     } catch (err) {
         message4.innerText='Unable to connect to server';
-// $1.innerText = message4.innerText;
+
        message4.classList.remove('hidden');
         message4.classList.replace('text-green-600' , 'text-red-600');
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
         setTimeout(()=>{
           message4.innerText='';
-// $1.innerText = message4.innerText;
+
           message4.classList.add('hidden');
         message4.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
     },5000);
     }
 
@@ -262,48 +240,48 @@ finallogin.addEventListener('click',async()=>{
         message.innerText = data.message;
         message.classList.remove('hidden');
         message.classList.replace('text-green-600' , 'text-red-600');
-// $1.innerText = message.innerText;
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
+
         setTimeout(()=>{
-// $1.innerText = '';
+
           message.innerText="";
          message.classList.add('hidden');
         message.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
         },5000)
         return;
     }
     if(response.status===400){
         const data = await response.json();
         message.innerText = data.message;
-// $1.innerText = message.innerText;
+
        message.classList.remove('hidden');
         message.classList.replace('text-green-600' , 'text-red-600');
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
          setTimeout(()=>{
     message.innerText='';
-// $1.innerText = message.innerText;
+
        message.classList.add('hidden');
         message.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
     },5000);
         return;
     }
     const data = await response.json();
     message.innerHTML =data.message;
-// $1.innerText = message.innerText;
+
      message.classList.remove('hidden');
         // message.classList.replace('text-green-600' , 'bg-red-600');
-// $1.classList.remove('hidden');
+
         // warn.classList.replace('bg-red-600' , 'bg-green-600');
      setTimeout(()=>{
     message.innerText='';
-// $1.innerText = message.innerText;
-// $1.classList.add('hidden');
+
+
         message.classList.add('hidden');
         // warn.classList.replace( 'text-green-500','text-red-500');
 
@@ -316,18 +294,18 @@ finallogin.addEventListener('click',async()=>{
    
   } catch (err) {
     message.innerText='Unable to connect to server';
-// $1.innerText = message.innerText;
+
        message.classList.remove('hidden');
         message.classList.replace('text-green-600' , 'text-red-600');
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
         setTimeout(()=>{
           message.innerText='';
-// $1.innerText = message.innerText;
+
           message.classList.add('hidden');
         message.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
         },5000)
   }
 });
@@ -346,34 +324,34 @@ verbtn.addEventListener('click', async () => {
         message2.innerText = data.message;
        message2.classList.remove('hidden');
         message2.classList.replace('text-green-600' , 'text-red-600');
-// $1.innerText = message2.innerText;
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
+
         setTimeout(()=>{
-// $1.innerText = '';
+
           message2.innerText="";
          message2.classList.add('hidden');
         message2.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
         },5000)
        }
     
     if(response.status===400){
         const data = await response.json();
         message2.innerText = data.message;
-// $1.innerText = message2.innerText;
+
        message2.classList.remove('hidden');
         message2.classList.replace('text-green-600' , 'text-red-600');
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
          setTimeout(()=>{
     message2.innerText='';
-// $1.innerText = message2.innerText;
+
        message2.classList.add('hidden');
         message2.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
     },5000);
         return;
     }
@@ -381,33 +359,33 @@ verbtn.addEventListener('click', async () => {
     message2.innerText = data.message;
     if(!data.success){
         message2.classList.replace('text-green-600' , 'text-red-600');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
 
 
     }
-// $1.innerText = message2.innerText;
+
      message2.classList.remove('hidden');
-// $1.classList.remove('hidden');
+
      setTimeout(()=>{
     message2.innerText='';
-// $1.innerText = message2.innerText;
-// $1.classList.add('hidden');
+
+
         message2.classList.add('hidden');
     },5000);
     } catch (err) {
     message2.innerText='Unable to connect to server';
-// $1.innerText = message2.innerText;
+
        message2.classList.remove('hidden');
         message2.classList.replace('text-green-600' , 'text-red-600');
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
         setTimeout(()=>{
           message2.innerText='';
-// $1.innerText = message2.innerText;
+
           message2.classList.add('hidden');
         message2.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
     },5000);
   }
 });
@@ -419,16 +397,16 @@ if(!agreement.checked){
     message3.innerText = "Please check Privacy policy and Terms of Use";
         message3.classList.remove('hidden');
         message3.classList.replace('text-green-600' , 'text-red-600');
-// $1.innerText = message3.innerText;
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
+
         setTimeout(()=>{
-// $1.innerText = '';
+
           message3.innerText="";
          message3.classList.add('hidden');
         message3.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
         
         },5000)
         return       
@@ -484,23 +462,23 @@ if(!agreement.checked){
         const data = await response.json();
          if(!data.success){
         message3.classList.replace('text-green-600' , 'text-red-600');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
 
 
     }
           message3.innerText = data.message;
         message3.classList.remove('hidden');
         message3.classList.replace('text-green-600' , 'text-red-600');
-// $1.innerText = message3.innerText;
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
+
         setTimeout(()=>{
-// $1.innerText = '';
+
           message3.innerText="";
          message3.classList.add('hidden');
         message3.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
         },5000)
        
         return;
@@ -511,30 +489,30 @@ if(!agreement.checked){
         message3.innerText = data.message;
         message3.classList.remove('hidden');
         message3.classList.replace('text-green-600' , 'text-red-600');
-// $1.innerText = message3.innerText;
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
+
         setTimeout(()=>{
-// $1.innerText = '';
+
           message3.innerText="";
          message3.classList.add('hidden');
         message3.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
     },5000);
         return;
     }
         const data = await response.json();
         message3.innerHTML = data.message + (data.link ? `<a href="${data.link}">${' ' + data.actionText}</a>` : '');
-// $1.innerText = message3.innerText;
+
                  message3.classList.remove('hidden');
         // message.classList.replace('text-green-600' , 'bg-red-600');
-// $1.classList.remove('hidden');
+
         // warn.classList.replace('bg-red-600' , 'bg-green-600');
      setTimeout(()=>{
     message3.innerText='';
-// $1.innerText = message3.innerText;
-// $1.classList.add('hidden');
+
+
         message3.classList.add('hidden');
 
     },5000);
@@ -553,18 +531,18 @@ if(!agreement.checked){
 
     } catch (err) {
         message3.innerText='Unable to connect to server';
-// $1.innerText = message3.innerText;
+
        message3.classList.remove('hidden');
         message3.classList.replace('text-green-600' , 'text-red-600');
-// $1.classList.remove('hidden');
-// $1.classList.replace('bg-green-600' , 'bg-red-600');
+
+
         setTimeout(()=>{
           message3.innerText='';
-// $1.innerText = message3.innerText;
+
           message3.classList.add('hidden');
         message3.classList.replace( 'text-red-600' , 'text-green-600');
-// $1.classList.add('hidden');
-// $1.classList.replace( 'bg-red-600' , 'bg-green-600');
+
+
     },5000);
     }
 });
