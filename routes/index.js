@@ -73,6 +73,21 @@ router.get('/', async (req, res) => {
 }
 });
 
+router.get('/alltime' , (req,res,next)=>{
+  return res.json("hello");
+
+});
+
+router.get('/aktu' , (req,res,next)=>{
+  res.redirect('https://university-resource-website.onrender.com');
+});
+router.get('/vedu' , (req,res,next)=>{
+  res.redirect('https://university-resource-website.onrender.com');
+});
+router.get('/vedu69' , (req,res,next)=>{
+  res.redirect('https://university-resource-website.onrender.com');
+});
+
 router.get('/index', (req, res,next) => {
        if(req.session.userId&& req.session.userName){
         req.session.randomid = (req.session.userId+req.session.userName+Date.now()).toString();
@@ -105,16 +120,6 @@ router.post('/fingerprint', async (req, res) => {
   const { fingerprint } = req.body;
   req.session.finalfingerprint = fingerprint;
   res.json({ success: true });
-
-  // const parts = fingerprint.split('|||');
-  // const [audiofingerprint, canvasfingerprint, fontfingerprint, ...commonfingerprint] = parts;
-  // const finalcommonfingerprint = commonfingerprint.join('|||');
-
-  // req.session.audiofingerprint = audiofingerprint;
-  // req.session.canvasfingerprint = canvasfingerprint;
-  // req.session.fontfingerprint = fontfingerprint;
-  // req.session.commonfingerprint = finalcommonfingerprint;
-  // req.session.Bossfinalemailfingerprint = fingerprint;
 
 
 });

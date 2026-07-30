@@ -45,6 +45,134 @@ Glogin.addEventListener('click' , (e)=>{
 window.location.href = '/auth/google';
 });
 
+// --- Fingerprint generation (moved from timer.js) ---
+let finalfingerprint;
+
+async function getAudioFingerprint() {
+  try {
+    const context = new OfflineAudioContext(1, 44100, 44100);
+    const oscillator = context.createOscillator();
+    oscillator.type = "triangle";
+    oscillator.frequency.value = 10000;
+    const compressor = context.createDynamicsCompressor();
+    compressor.threshold.value = -50;
+    compressor.knee.value = 40;
+    compressor.ratio.value = 12;
+    compressor.attack.value = 0;
+    compressor.release.value = 0.25;
+    oscillator.connect(compressor);
+    compressor.connect(context.destination);
+    oscillator.start(0);
+    const buffer = await context.startRendering();
+    const data = buffer.getChannelData(0);
+    let fingerprint = 0;
+    for (let i = 4000; i < 5000; i++) {
+      fingerprint += Math.abs(data[i]);
+    }
+    return fingerprint.toString();
+  } catch (err) {
+    console.warn('Audio fingerprint failed:', err);
+    return 'audio_error';
+  }
+}
+
+async function getCanvasFingerprint () {
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = 200;
+    canvas.height = 50;
+    const ctx = canvas.getContext("2d");
+    ctx.textBaseline = "top";
+    ctx.font = "14px 'Arial'";
+    ctx.fillStyle = "#f60";
+    ctx.fillRect(125, 1, 62, 20);
+    ctx.fillStyle = "#069";
+    ctx.fillText("Hello, world! 🙂 #canvas", 2, 15);
+    ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+    ctx.fillText("Hello, world! 🙂 #canvas", 4, 17);
+    const dataURL = canvas.toDataURL();
+    const buffer =  new TextEncoder().encode(dataURL);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = await Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  } catch (err) {
+    console.warn('Canvas fingerprint failed:', err);
+    return 'canvas_error';
+  }
+}
+
+function fontTimingFingerprint() {
+  try {
+    const fonts = ["Arial", "Helvetica", "Georgia", "Courier New", "Times New Roman", "Verdana", "Impact"];
+    const sizes = [12, 24, 48, 72, 96];
+    const timings = {};
+    fonts.forEach(font => {
+      timings[font] = {};
+      sizes.forEach(size => {
+        const el = document.createElement("span");
+        el.style.cssText = `font: ${size}px '${font}'; position: absolute; visibility: hidden;`;
+        el.textContent = "mmmwwwiiiIII@#gggjjy";
+        document.body.appendChild(el);
+        const start = performance.now();
+        el.getBoundingClientRect();
+        timings[font][size] = performance.now() - start;
+        document.body.removeChild(el);
+      });
+    });
+    return JSON.stringify(timings);
+  } catch (err) {
+    console.warn('Font timing failed:', err);
+    return 'font_error';
+  }
+}
+
+// Expose a promise so verify logic can wait for fingerprint
+window.fingerprintReady = (async () => {
+  try {
+    const [canvasFp, audioFp] = await Promise.all([
+      getCanvasFingerprint(),
+      getAudioFingerprint(),
+    ]);
+    const allParts = [
+      canvasFp,
+      audioFp,
+      fontTimingFingerprint(),
+      navigator.userAgent,
+      screen.width + "x" + screen.height,
+      Intl.DateTimeFormat().resolvedOptions().timeZone,
+      navigator.hardwareConcurrency,
+      navigator.language,
+    ].join("|||");
+    finalfingerprint = allParts;
+    return finalfingerprint;
+  } catch (err) {
+    console.error('Error building fingerprint in signup.js:', err);
+    finalfingerprint = 'notfound';
+    return finalfingerprint;
+  }
+})();
+
+// POST fingerprint when ready (or post 'notfound' after timeout)
+(async () => {
+  try {
+    const fp = await Promise.race([
+      window.fingerprintReady,
+      new Promise(resolve => setTimeout(() => resolve(null), 3000))
+    ]);
+    if (!fp) {
+      finalfingerprint = 'notfound';
+    }
+    await fetch('/fingerprint', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fingerprint: finalfingerprint })
+    });
+  } catch (err) {
+    console.warn('Failed to POST fingerprint from signup.js:', err);
+  }
+})();
+// --- end fingerprint code ---
+
 function toggleForms(showSignup) {
   if (!mainlogin || !mainsignup || !msignup || !mlogin) return;
 
@@ -359,19 +487,13 @@ verbtn.addEventListener('click', async () => {
     message2.innerText = data.message;
     if(!data.success){
         message2.classList.replace('text-green-600' , 'text-red-600');
-
-
-
     }
-
      message2.classList.remove('hidden');
-
      setTimeout(()=>{
     message2.innerText='';
-
-
         message2.classList.add('hidden');
     },5000);
+    
     } catch (err) {
     message2.innerText='Unable to connect to server';
 
@@ -389,6 +511,7 @@ verbtn.addEventListener('click', async () => {
     },5000);
   }
 });
+
 
 signupbtn.addEventListener('click', async (e) => {
     e.preventDefault();

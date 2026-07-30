@@ -161,18 +161,28 @@ router2.post('/verify2', TimeLimiter, (req, res) => {
   email = email.toLowerCase().trim();
   const stored = verificationCodes.get(email);
   if (code == stored) {
-req.session.verified = true;
-    req.session.verifiedEmail = email;
-      const parts = req.session.finalfingerprint.split('|||');
-  const [canvasfingerprint, audiofingerprint, fontfingerprint, ...commonfingerprint] = parts;
-  const finalcommonfingerprint = commonfingerprint.join('|||');
+    // If fingerprint was not recorded, mark it as 'notfound' so verification still proceeds
+    if (!req.session.finalfingerprint) {
+      req.session.finalfingerprint = 'notfound';
+    }
 
-  req.session.audiofingerprint = audiofingerprint;
-  req.session.canvasfingerprint = canvasfingerprint;
-  req.session.fontfingerprint = fontfingerprint;
-  req.session.commonfingerprint = finalcommonfingerprint;
- 
-    res.json({ success: true, message: 'Verification successful!' });
+    try {
+      req.session.verified = true;
+      req.session.verifiedEmail = email;
+      const parts = String(req.session.finalfingerprint).split('|||');
+      const [canvasfingerprint, audiofingerprint, fontfingerprint, ...commonfingerprint] = parts;
+      const finalcommonfingerprint = commonfingerprint.join('|||');
+
+      req.session.audiofingerprint = audiofingerprint;
+      req.session.canvasfingerprint = canvasfingerprint;
+      req.session.fontfingerprint = fontfingerprint;
+      req.session.commonfingerprint = finalcommonfingerprint;
+
+      return res.json({ success: true, message: 'Verification successful!' });
+    } catch (err) {
+      console.error('Error processing fingerprint on /verify2:', err);
+      return res.status(500).json({ success: false, message: 'Server error while processing fingerprint.' });
+    }
     
   } else {  
     res.json({ success: false, message: 'Wrong code, Please try again.' });
