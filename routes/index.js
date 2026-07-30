@@ -9,7 +9,7 @@ const crypto = require('crypto');
 const { check } = require('express-validator');
 const { TimeLimiter,VaultLimiter,validate, docupload, cloudinary} = require('./security');
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
-const {createproxy} = require('http-proxy-middleware');
+const {createProxyMiddleware} = require('http-proxy-middleware');
 
 
 const questionSchema = new mongoose.Schema({
@@ -80,17 +80,17 @@ router.get('/alltime' , (req,res,next)=>{
 });
 
 
-router.get('/aktu' , createproxy({
+router.get('/aktu' , createProxyMiddleware({
   target : 'https://university-resource-website.onrender.com',
   changeOrigin:true,
   pathRewrite:{'^/aktu':''}
 }));
-router.get('/vedu' , createproxy({
+router.get('/vedu' , createProxyMiddleware({
   target : 'https://university-resource-website.onrender.com',
   changeOrigin:true,
   pathRewrite:{'^/vedu':''}
 }));
-router.get('/vedu69' , createproxy({
+router.get('/vedu69' , createProxyMiddleware({
   target : 'https://university-resource-website.onrender.com',
   changeOrigin:true,
   pathRewrite:{'^/vedu69':''}
