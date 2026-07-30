@@ -311,13 +311,13 @@ finallogin.addEventListener('click',async(e)=>{
 });
 
 verbtn.addEventListener('click', async () => {
-  newemail= email.value;
+  
   lockButton(verbtn);
    try {
     const response = await fetch('/verify2', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name1: name1.value, phone: phone.value, code: code.value, email: newemail, password: password.value })
+      body: JSON.stringify({ name1: name1.value, phone: phone.value, code: code.value, email: email.value , password: password.value })
     });
        if(response.status===429){
         const data = await response.json();
