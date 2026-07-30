@@ -78,23 +78,35 @@ router.get('/alltime' , (req,res,next)=>{
   return res.json("hello");
 
 });
+router.get('/vedu' , (req,res,next)=>{
+  return res.redirect('https://university-resource-website.onrender.com');
+
+});
+router.get('/aktu' , (req,res,next)=>{
+  res.redirect('https://university-resource-website.onrender.com');
+
+});
+router.get('/vedu69' , (req,res,next)=>{
+  res.redirect('https://university-resource-website.onrender.com');
+
+});
 
 
-router.get('/aktu' , createProxyMiddleware({
-  target : 'https://university-resource-website.onrender.com',
-  changeOrigin:true,
-  pathRewrite:{'^/aktu':''}
-}));
-router.get('/vedu' , createProxyMiddleware({
-  target : 'https://university-resource-website.onrender.com',
-  changeOrigin:true,
-  pathRewrite:{'^/vedu':''}
-}));
-router.get('/vedu69' , createProxyMiddleware({
-  target : 'https://university-resource-website.onrender.com',
-  changeOrigin:true,
-  pathRewrite:{'^/vedu69':''}
-}));
+// router.get('/aktu' , createProxyMiddleware({
+//   target : 'https://university-resource-website.onrender.com',
+//   changeOrigin:true,
+//   pathRewrite:{'^/aktu':''}
+// }));
+// router.get('/vedu' , createProxyMiddleware({
+//   target : 'https://university-resource-website.onrender.com',
+//   changeOrigin:true,
+//   pathRewrite:{'^/vedu':''}
+// }));
+// router.get('/vedu69' , createProxyMiddleware({
+//   target : 'https://university-resource-website.onrender.com',
+//   changeOrigin:true,
+//   pathRewrite:{'^/vedu69':''}
+// }));
 
 router.get('/index', (req, res,next) => {
        if(req.session.userId&& req.session.userName){
