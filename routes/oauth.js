@@ -49,20 +49,23 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         const googleId = profile.id;
-        const email = profile.emails[0]?.value;
+        const email = profile.emails?.[0]?.value || null;
         const name = profile.displayName;
-        const photo = profile.photos[0]?.value;
+        const photo = profile.photos?.[0]?.value || null;
 
-        // 1. Query Supabase for existing user
+        // 1. Query Supabase (matching table 'allusers' and column 'googleid')
         let { data: user, error } = await supabase
-          .from('users')
+          .from('allusers')
           .select('*')
-          .eq('google_id', googleId)
+          .eq('googleid', googleId)
           .maybeSingle();
 
-        if (error) return done(error, null);
+        if (error) {
+          console.error('Supabase lookup error:', error);
+          return done(new Error(error.message), null);
+        }
 
-        // 2. Insert new user if they don't exist
+        // 2. Insert user if they don't exist
         if (!user) {
           const { data: newUser, error: insertError } = await supabase
             .from('allusers')
@@ -77,7 +80,10 @@ passport.use(
             .select()
             .single();
 
-          if (insertError) return done(insertError, null);
+          if (insertError) {
+            console.error('Supabase insert error:', insertError);
+            return done(new Error(insertError.message), null);
+          }
           user = newUser;
         }
 

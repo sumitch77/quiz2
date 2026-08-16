@@ -246,7 +246,7 @@ async (req, res) => {
     try {
 
  const { data, error } = await supabase
-    .from('profiles')
+    .from('allusers')
     .insert([
       { name : name1,
          email: email, 
