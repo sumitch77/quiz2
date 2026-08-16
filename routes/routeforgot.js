@@ -141,4 +141,4 @@ const updatedUser = await User.findOneAndUpdate(
 
 
 
-module.exports = router3;
+module.exports ={ router3 };

@@ -7,7 +7,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const dotenv = require('dotenv');
 dotenv.config();
 
-const{ User} = require('./auth');
+const{ supabase} = require('./supabase');
 
 
 
@@ -25,11 +25,10 @@ router4.get('/auth/google/callback',
         session: true 
     }),
     (req, res) => {
-        req.session.userName = req.user.name1;
-        req.session.userId = req.user._id;
-        req.session.googleId = req.user.googleId;
+        req.session.userName = req.user.name;
+        req.session.userId = req.user.id;
         req.session.userEmail = req.user.email;
-        req.session.profilepic = req.user.Gprofile;
+        req.session.profilepic = req.user.googlePhoto;
 
         req.session.save((err) => {
             if (err) {
@@ -40,58 +39,54 @@ router4.get('/auth/google/callback',
         });
     }
 );
-
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/auth/google/callback",
-    proxy: true 
-  },
-  async (accessToken, refreshToken, profile, done) => {
-    console.log("Raw Google Profile Object:", profile);
-
-    try {
-        
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: '/auth/google/callback',
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
         const googleId = profile.id;
-        const email = profile.emails[0].value;
+        const email = profile.emails[0]?.value;
         const name = profile.displayName;
-        const profilePic = profile.photos[0]?.value; 
+        const photo = profile.photos[0]?.value;
 
-        let user = await User.findOne({ 
-            $or: [
-                { googleId: googleId },
-                { email: email.toLowerCase() }
-            ]
-        });
+        // 1. Query Supabase for existing user
+        let { data: user, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('google_id', googleId)
+          .maybeSingle();
 
+        if (error) return done(error, null);
+
+        // 2. Insert new user if they don't exist
         if (!user) {
-            user = new User({
-                name1:name,
-                email: email.toLowerCase(),      
-                googleId: googleId,
-                Gprofile: profilePic,
-                // Automatically set legal agreement fields since they clicked your OAuth button
-                // agreement: {
-                //     agreed: true,
-                //     agreedAt: new Date()
-                // }
-            });
-            await user.save();
-        } else if (!user.googleId) {
-            // User previously signed up using traditional email/password forms.
-            // Link their Google profile ID securely so they can use both login methods!
-            user.googleId = googleId;
-            if (!user.Gprofile) user.Gprofile = profilePic;
-            await user.save();
+          const { data: newUser, error: insertError } = await supabase
+            .from('allusers')
+            .insert([
+              {
+                googleid: googleId,
+                email: email,
+                name: name,
+                googlePhoto: photo,
+              },
+            ])
+            .select()
+            .single();
+
+          if (insertError) return done(insertError, null);
+          user = newUser;
         }
 
         return done(null, user);
-
-    } catch (error) {
-        console.error("OAuth Processing Error:", error);
-        return done(error, null);
+      } catch (err) {
+        return done(err, null);
+      }
     }
-  }
-));
+  )
+);
 
 module.exports = {router4};

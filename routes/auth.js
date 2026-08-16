@@ -1,7 +1,6 @@
 const express = require('express'); 
 const path = require('path');
 const router2 = express.Router();
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
 const {Resend} = require('resend');
@@ -9,29 +8,15 @@ const resendClient = new Resend(process.env.TOKEN);
 let verificationCodes= new Map();
 const { check } = require('express-validator');
 const { EmailLimiter , TimeLimiter ,validate,} = require('./security');
-const quesid = new Map();
 const {upload, cloudinary} = require('./security');
 const validate2 = require('deep-email-validator');
 const { type } = require('os');
+const {supabase } = require('./supabase');
 
 
-const userSchema = new mongoose.Schema({
-    name1: { type: String, required: true },
-    phone: { type: Number },
-    email: { type: String, required: true },
-    password: { type: String},
-    googleId:{type:String},
-    Gprofile:{type:String},
-    // filesend : {type : String},
-    standardfingerprint: { type: String },
-    audiofingerprint: { type: String },
-    canvasfingerprint: { type: String },
-    fontfingerprint : {type:String},
-    commonfingerprint :{type:String},
-});
-const User = mongoose.model('user', userSchema);
 
-router2.get('/logout', TimeLimiter,(req, res) => {
+
+router2.get('/logout',  TimeLimiter,(req, res) => {
   req.session.destroy(err => {
     if (err) {
       return res.status(500).json({ success: false, message: 'An error occurred during logout', error: err.message });
@@ -42,26 +27,21 @@ router2.get('/logout', TimeLimiter,(req, res) => {
 });
 
 
-router2.get('/login', (req, res) => {
+router2.get('/login' ,(req, res) => {
+  if (req.session.userId) {
+    return res.redirect('/');
+  }
   res.sendFile(path.join(__dirname, '../views/login.html'));
 });
 
 router2.post('/login', TimeLimiter, async(req, res) => {
 
     let { password, email } = req.body;
-    email = email.toLowerCase().trim();
-    if(email==='guest@gmail.com' && password==='guest123'){
-         req.session.userId = "69d11107e772eed2c6b33c1f";
-            req.session.userName = "guest";
-            req.session.userEmail= email;
+    email = String(email.toLowerCase().trim());
+    password = String(password.trim());
 
-     return res.json({ success: true, message: 'Login successful!' });
-
-    }
-
-   
       if (email === process.env.ADMINEMAIL) {
-    req.session.admin = true;
+  console.log('Admin login attempt');
   }
 const result = await validate2.validate({
   email: email,
@@ -75,25 +55,27 @@ const result = await validate2.validate({
       reason: result.reason 
     });
   }
-    try {
-        const user = await User.findOne({ email: email , password: password });
-         if (user) {
-            req.session.userId = user._id.toString();
-            req.session.userName = user.name1;
-            req.session.userEmail= user.email;
-              req.session.photourl = user.Gprofile;
-     return res.json({ success: true, message: 'Login successful!' });
-      console.log(`User ${req.session.userId} logged in successfully.`);
-      
-      
-    } else {
-     return res.json({ success: false, message: 'Invalid credentials. Please try again Wrong email or password.' });
-    }
-    }catch (err) {
-        console.log('Login error:', err);
-      return  res.status(500).json({ success: false, message: 'An error occurred during login', error: err.message });    
-    }
-   
+    const { data: user, error } = await supabase
+    .from('allusers')
+    .select('*')
+    .eq('email', email)
+    .eq('password', password)
+    .maybeSingle();
+
+  if (error) {
+    return res.status(500).json({sucess:false , message: error.message });
+  }
+
+  
+  if (!user) {
+    return res.status(401).json({success:false , message: 'Invalid email or password' });
+  }
+    req.session.userId = user.id; 
+  req.session.userEmail = email;
+  req.session.userName = user.name;
+return res.status(200).json({ success: true, message: 'Logged in successfully!' });
+       
+  
     });
 
 router2.get('/forgot', (req, res) => {
@@ -161,7 +143,6 @@ router2.post('/verify2', TimeLimiter, (req, res) => {
   email = email.toLowerCase().trim();
   const stored = verificationCodes.get(email);
   if (code == stored) {
-    // If fingerprint was not recorded, mark it as 'notfound' so verification still proceeds
     if (!req.session.finalfingerprint) {
       req.session.finalfingerprint = 'notfound';
     }
@@ -215,7 +196,7 @@ router2.post('/verify2', TimeLimiter, (req, res) => {
 //   });
 // }
 
-router2.post('/signupco',TimeLimiter,
+router2.post('/signupco', TimeLimiter,
   [check('agreement')
     .custom((value) => {
         const accepted = value === true || String(value).toLowerCase() === 'true';
@@ -236,8 +217,6 @@ router2.post('/signupco',TimeLimiter,
     .isLength({ min: 6 , max:20 }).withMessage('Password must be between 6 and 20 characters long'),
     check('name1').notEmpty().withMessage('Name is required')
     .isLength({ min: 2, max: 20 }).withMessage('Name must be between 2 and 20 characters long'),
-    check('phone').notEmpty().withMessage('Phone number is required')
-    .isMobilePhone().withMessage('Invalid phone number format'),
     check('confirmpass')
     .custom((value, { req }) => {
       if (value !== req.body.password) {
@@ -251,23 +230,12 @@ router2.post('/signupco',TimeLimiter,
   
     
 async (req, res) => {
-  let { name1 , phone , email , password, confirmpass , agreement} = req.body;
-  email = email.toLowerCase().trim();
-  // let filePath = null;
-  //  if (req.file) {
-  //   const result = await new Promise((resolve, reject) => {
-  //     const stream = cloudinary.uploader.upload_stream(
-  //       { folder: 'uploads' },
-  //       (error, result) => {
-  //         if (error) reject(error);
-  //         else resolve(result);
-  //       }
-  //     );
-  //     stream.end(req.file.buffer);
-  //   });
+  let { name1 , email , password, confirmpass} = req.body;
+  email = String(email.toLowerCase().trim());
+  name1 = String(name1.trim());
+  password = String(password.trim());
+  confirmpass = String(confirmpass.trim());
 
-  //   filePath = result.secure_url;
-  // }
   const captcha = req.session.captcha;
   const captchaIsValid = captcha && captcha.valid === true && captcha.email === email && typeof captcha.issuedAt === 'number' && (Date.now() - captcha.issuedAt) <= 3 * 60 * 1000;
 
@@ -275,30 +243,40 @@ async (req, res) => {
     req.session.captcha = null;
     return res.status(400).json({success: false, message: 'Captcha Verification failed , please try again' });
   }
-
-  if(req.session.verified && req.session.verifiedEmail === email ) {
     try {
-  const newUser = new User({ name1, phone, email, password, filesend: filePath , standardfingerprint: req.session.emailfingerprint , audiofingerprint: req.session.audiofingerprint, canvasfingerprint: req.session.canvasfingerprint, fontfingerprint: req.session.fontfingerprint, commonfingerprint: req.session.commonfingerprint });
-            await newUser.save();
-            req.session.verified = false;
-            req.session.captcha = null;
-            // req.session.photourl = filePath;
-             req.session.userId = newUser._id.toString();
-            req.session.userName = newUser.name1;
-            req.session.userEmail = newUser.email;
-    res.json({ success: true, message: 'Signup successful!' });
 
-    } catch (err) {
-      if(err.code === 11000) {
-        res.status(400).json({ success: false, message: 'Email already exists. Login with existing account', link: '/login', actionText: 'Login' });
+ const { data, error } = await supabase
+    .from('profiles')
+    .insert([
+      { name : name1,
+         email: email, 
+        password: password, 
+        
+       }
+    ]).select();
+    if (error) {
+      if (error.code === '23505') {
+        return res.status(400).json({ success: false, message: 'Email already exists. Login with existing account', link: '/login', actionText: 'Login' });
+      } else {
+        return res.status(500).json({ success: false, message: 'An error occurred during signup', error: error.message });
       }
-        else {
-        res.status(500).json({ success: false, message: 'An error occurred during signup', error: err.message }); 
-        }   
     }
-  } else {
-    res.json({ success: false, message: 'Email not verified. Please verify your email before signing up.' });
-  }
+if (data) {
+  req.session.userId = data[0].id; 
+  req.session.userEmail = email;
+  req.session.userName = name1;
+  
+  return res.status(201).json({
+    success: true,
+    message: 'Account created and logged in successfully!',
+  });
+}
+ 
+    } catch (err) {
+    
+        return res.status(500).json({ success: false, message: 'An error occurred during signup', error: err.message }); 
+     
+  } 
     
 });
 
@@ -306,5 +284,5 @@ async (req, res) => {
 
 module.exports = {
     router2, 
-    User,
+    
 };

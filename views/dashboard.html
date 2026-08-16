@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QuizNest — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" /> 
+<link rel="stylesheet" href="output.css">
+<style>
+  /* Base font family helpers matching the design tokens */
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .font-display {
+    font-family: 'Baloo 2', system-ui, sans-serif;
+  }
+</style>
+</head>
+<body class="bg-[#FAFBF8] text-[#14261D] antialiased min-h-screen flex flex-col justify-between" style="background-image: radial-gradient(circle, rgba(21,154,91,0.12) 1px, transparent 1.6px); background-size: 26px 26px;">
+
+<!-- ===================== Header ===================== -->
+<header class="sticky top-0 z-50 bg-[#FAFBF8]/90 backdrop-blur-md border-b border-[#E7EDE7]">
+  <div class="max-w-7xl mx-auto px-6 sm:px-12 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="w-9 h-9 rounded-xl bg-linear-to-br from-[#159A5B] to-[#0E7A48] flex items-center justify-center shadow-sm text-white" aria-hidden="true">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
+      </span>
+      <span class="font-display font-bold text-xl tracking-tight">QuizNest</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="relative w-10 h-10 rounded-xl flex items-center justify-center text-[#62716A] hover:bg-[#E3F5EA] hover:text-[#0E7A48] transition" aria-label="Search quizzes">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="relative w-10 h-10 rounded-xl flex items-center justify-center text-[#62716A] hover:bg-[#E3F5EA] hover:text-[#0E7A48] transition after:content-[''] after:absolute after:top-2 after:right-2 after:w-2 after:h-2 after:rounded-full after:bg-[#E15251] after:border-2 after:border-[#FAFBF8]" aria-label="Notifications">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <div class="w-10 h-10 rounded-full bg-linear-to-br from-[#159A5B] to-[#0E7A48] text-white font-display font-bold text-base flex items-center justify-center ml-2 shadow-sm" aria-label="Alex's profile">A</div>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== Main Content ===================== -->
+<main class="max-w-7xl mx-auto px-6 sm:px-12 w-full grow pb-16">
+
+  <!-- Hero Row: Welcome + Join card & AI Banner -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch pt-11">
+
+    <!-- Welcome + Join Quiz card -->
+    <div class="flex flex-col justify-center bg-[#E3F5EA] border border-[#CFEFDA] rounded-3xl p-8 sm:p-9 shadow-sm">
+      <h1 class="font-display font-bold text-2xl mb-1">Welcome back, Alex 👋</h1>
+      <p class="text-[#62716A] text-sm mb-6">Let's find your next quiz.</p>
+      <p class="text-base font-medium text-[#14261D] mb-4">Want to join a quiz? Enter your code below and jump straight in.</p>
+
+      <form class="flex flex-col sm:flex-row items-stretch w-full bg-white border border-[#E7EDE7] rounded-3xl sm:rounded-full shadow-md overflow-hidden" id="joinForm">
+        <div class="flex-1 flex items-center px-6 py-4 sm:py-0 min-w-0">
+          <label for="quizCode" class="sr-only">Quiz code</label>
+          <input id="quizCode" name="code" type="text" placeholder="Enter Quiz Code" autocomplete="off" maxlength="10" class="w-full border-none outline-none bg-transparent font-semibold text-base tracking-wider uppercase text-[#14261D] placeholder:text-[#A9B6AE] placeholder:font-medium placeholder:tracking-normal placeholder:normal-case py-3" />
+        </div>
+        <!-- Divider (changes orientation responsively) -->
+        <div class="relative sm:w-0 sm:border-l-2 sm:border-dashed sm:border-[#E7EDE7] sm:my-2.5 h-0 border-t-2 border-dashed border-[#E7EDE7] mx-5 sm:mx-0 before:content-[''] before:absolute before:w-4 before:h-4 before:rounded-full before:bg-[#E3F5EA] before:left-1/2 sm:before:-translate-x-1/2 sm:before:-top-2 before:-top-2 after:content-[''] after:absolute after:w-4 after:h-4 after:rounded-full after:bg-[#E3F5EA] after:left-1/2 sm:after:-translate-x-1/2 sm:after:-bottom-2 after:-bottom-2" aria-hidden="true"></div>
+        <button type="submit" class="flex items-center justify-center gap-2 m-2 sm:m-1.5 px-6 py-3.5 bg-[#0E7A48] text-white rounded-2xl sm:rounded-full font-bold text-sm whitespace-nowrap hover:bg-[#0A6339] hover:translate-x-0.5 hover:shadow-lg transition active:scale-95 disabled:opacity-75">
+          <span class="btn-label">Join Quiz</span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="transition group-hover:translate-x-1"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </form>
+    </div>
+
+    <!-- AI Banner -->
+    <button type="button" class="w-full flex flex-col sm:flex-row items-center justify-between gap-5 text-left bg-linear-to-r from-[#E3F5EA] to-[#FFF7E8] border border-[#CFEFDA] rounded-3xl p-8 sm:p-9 shadow-sm hover:-translate-y-1 hover:shadow-md transition active:scale-95 group">
+      <div class="flex-1 min-w-0 flex flex-col items-center sm:items-start gap-2">
+        <span class="bg-white text-[#0E7A48] text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">✨ AI Quiz Maker</span>
+        <h2 class="font-display text-xl sm:text-2xl font-bold leading-tight text-center sm:text-left">Generate Your Own Quiz with AI</h2>
+        <p class="text-[#62716A] text-sm leading-relaxed text-center sm:text-left">Create an exciting quiz in seconds with AI — just pick a topic and let it do the rest.</p>
+        <span class="inline-flex items-center gap-2 mt-1 font-bold text-[#0E7A48] text-sm">
+          Try it now
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition group-hover:translate-x-1"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </div>
+      <div class="w-36 sm:w-40 shrink-0" aria-hidden="true">
+        <svg viewBox="0 0 300 260" class="w-full h-auto">
+          <ellipse cx="150" cy="236" rx="108" ry="12" fill="#0E7A48" opacity="0.06"/>
+          <path d="M118 150 Q100 165 108 190" stroke="#159A5B" stroke-width="16" stroke-linecap="round" fill="none"/>
+          <path d="M182 150 Q206 160 197 184" stroke="#159A5B" stroke-width="16" stroke-linecap="round" fill="none"/>
+          <rect x="118" y="120" width="64" height="82" rx="24" fill="#159A5B"/>
+          <circle cx="150" cy="96" r="34" fill="#F6C593"/>
+          <path d="M116 92 Q120 52 150 50 Q180 52 184 92 Q170 72 150 70 Q130 72 116 92Z" fill="#3B2A20"/>
+          <circle cx="140" cy="98" r="3.4" fill="#20261F"/>
+          <circle cx="160" cy="98" r="3.4" fill="#20261F"/>
+          <path d="M138 110 Q150 118 162 110" stroke="#20261F" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <rect x="40" y="188" width="220" height="18" rx="9" fill="#CFEFDA"/>
+          <rect x="60" y="206" width="14" height="30" rx="6" fill="#CFEFDA"/>
+          <rect x="226" y="206" width="14" height="30" rx="6" fill="#CFEFDA"/>
+          <path d="M110 188 L110 150 Q130 139 150 150 L150 188 Z" fill="#FFFFFF" stroke="#159A5B" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M150 188 L150 150 Q170 139 190 150 L190 188 Z" fill="#FFFFFF" stroke="#159A5B" stroke-width="3" stroke-linejoin="round"/>
+          <line x1="150" y1="150" x2="150" y2="188" stroke="#159A5B" stroke-width="2"/>
+          <line x1="118" y1="163" x2="139" y2="163" stroke="#CFEFDA" stroke-width="3" stroke-linecap="round"/>
+          <line x1="118" y1="173" x2="135" y2="173" stroke="#CFEFDA" stroke-width="3" stroke-linecap="round"/>
+          <line x1="161" y1="163" x2="182" y2="163" stroke="#CFEFDA" stroke-width="3" stroke-linecap="round"/>
+          <line x1="161" y1="173" x2="178" y2="173" stroke="#CFEFDA" stroke-width="3" stroke-linecap="round"/>
+          <g transform="translate(150,141) rotate(-20)">
+            <rect x="0" y="-4" width="54" height="8" rx="4" fill="#FFD966"/>
+            <rect x="48" y="-4" width="8" height="8" fill="#F2A65A"/>
+            <rect x="55" y="-3" width="4" height="6" fill="#20261F"/>
+          </g>
+          <circle cx="235" cy="58" r="20" fill="#FFF7E8" stroke="#FFD966" stroke-width="3"/>
+          <path d="M227 54 q8 -11 16 0 q-8 11 -16 0" stroke="#FFD966" stroke-width="2.4" fill="none"/>
+          <rect x="228" y="76" width="14" height="7" rx="2" fill="#FFD966"/>
+          <rect x="230" y="84" width="10" height="5" rx="2" fill="#FFD966"/>
+          <line x1="235" y1="26" x2="235" y2="18" stroke="#FFD966" stroke-width="3" stroke-linecap="round"/>
+          <line x1="256" y1="40" x2="262" y2="34" stroke="#FFD966" stroke-width="3" stroke-linecap="round"/>
+          <line x1="214" y1="40" x2="208" y2="34" stroke="#FFD966" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="66" cy="52" r="18" fill="#FFFFFF" stroke="#159A5B" stroke-width="3"/>
+          <text x="66" y="59" font-family="'Baloo 2', sans-serif" font-size="19" font-weight="700" fill="#159A5B" text-anchor="middle">?</text>
+          <rect x="40" y="30" width="10" height="10" fill="#FFD966" transform="rotate(45 45 35)"/>
+        </svg>
+      </div>
+    </button>
+
+  </div>
+
+  <!-- Played Games Section -->
+  <section class="mt-13" id="played-games">
+    <div class="flex items-end justify-between mb-4">
+      <div>
+        <h3 class="font-display text-xl font-bold">Played Games</h3>
+        <p class="text-[#62716A] text-sm mt-0.5">Pick up where you left off.</p>
+      </div>
+      <div class="flex gap-1.5" data-scroll-controls>
+        <button class="w-9 h-9 rounded-xl flex items-center justify-center bg-white border border-[#E7EDE7] text-[#62716A] hover:bg-[#E3F5EA] hover:text-[#0E7A48] hover:border-[#CFEFDA] transition" data-dir="-1" aria-label="Scroll left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="w-9 h-9 rounded-xl flex items-center justify-center bg-white border border-[#E7EDE7] text-[#62716A] hover:bg-[#E3F5EA] hover:text-[#0E7A48] hover:border-[#CFEFDA] transition" data-dir="1" aria-label="Scroll right">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="flex gap-4 overflow-x-auto p-1 scroll-smooth snap-x snap-proximity [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#CFEFDA] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#159A5B]" data-row>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#EAF2FE;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">🧠</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">General Knowledge Blast</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">General Knowledge</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#FFF7DE;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">🔬</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">Science Sprint</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Science</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#E4F6F1;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">🌍</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">World Capitals</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Geography</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#FFEFE6;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">🎬</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">Movie Mania</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Entertainment</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#FFF2CF;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">⚽</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">Sports Legends</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Sports</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#F2EEFE;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">➗</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">Math Master</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Maths</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Top Choice Section -->
+  <section class="mt-13" id="top-choice">
+    <div class="flex items-end justify-between mb-4">
+      <div>
+        <h3 class="font-display text-xl font-bold">Top Choice</h3>
+        <p class="text-[#62716A] text-sm mt-0.5">Loved by the community this week.</p>
+      </div>
+      <div class="flex gap-1.5" data-scroll-controls>
+        <button class="w-9 h-9 rounded-xl flex items-center justify-center bg-white border border-[#E7EDE7] text-[#62716A] hover:bg-[#E3F5EA] hover:text-[#0E7A48] hover:border-[#CFEFDA] transition" data-dir="-1" aria-label="Scroll left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="w-9 h-9 rounded-xl flex items-center justify-center bg-white border border-[#E7EDE7] text-[#62716A] hover:bg-[#E3F5EA] hover:text-[#0E7A48] hover:border-[#CFEFDA] transition" data-dir="1" aria-label="Scroll right">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="flex gap-4 overflow-x-auto p-1 scroll-smooth snap-x snap-proximity [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#CFEFDA] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#159A5B]" data-row>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#FFF2CF;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">🏆</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">Ultimate Trivia Challenge</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Mixed</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#FDE9F2;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">⭐</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">Celebrity IQ</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Influencers</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#FCEAEA;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">🚩</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">Flag Frenzy</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Flags</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#E4F6F1;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">💱</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">Money Matters</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Currencies</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#FFF2CF;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">🥇</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">Olympic Legends</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Awards</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-48 flex flex-col items-start gap-3 bg-white border border-[#E7EDE7] rounded-2xl p-4 text-left shadow-sm hover:-translate-y-1 hover:scale-105 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group" style="--tint:#F2EEFE;">
+        <span class="w-13 h-13 rounded-2xl text-2xl flex items-center justify-center transition group-hover:bg-white/25" style="background: var(--tint);">🎨</span>
+        <span class="font-display font-semibold text-base leading-snug transition group-hover:text-white">Art &amp; Culture</span>
+        <span class="text-xs font-bold text-[#0E7A48] bg-[#E3F5EA] px-2.5 py-1 rounded-full transition group-hover:bg-white/20 group-hover:text-white">Culture</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="mt-13" id="categories">
+    <div class="flex items-end justify-between mb-4">
+      <div>
+        <h3 class="font-display text-xl font-bold">Categories</h3>
+        <p class="text-[#62716A] text-sm mt-0.5">Browse quizzes by topic.</p>
+      </div>
+      <div class="flex gap-1.5" data-scroll-controls>
+        <button class="w-9 h-9 rounded-xl flex items-center justify-center bg-white border border-[#E7EDE7] text-[#62716A] hover:bg-[#E3F5EA] hover:text-[#0E7A48] hover:border-[#CFEFDA] transition" data-dir="-1" aria-label="Scroll left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="w-9 h-9 rounded-xl flex items-center justify-center bg-white border border-[#E7EDE7] text-[#62716A] hover:bg-[#E3F5EA] hover:text-[#0E7A48] hover:border-[#CFEFDA] transition" data-dir="1" aria-label="Scroll right">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="flex gap-4 overflow-x-auto p-1 scroll-smooth snap-x snap-proximity [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#CFEFDA] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#159A5B]" data-row>
+      <button type="button" class="snap-start shrink-0 w-32 h-32 flex flex-col items-center justify-center gap-2 rounded-2xl border border-black/5 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group">
+        <span class="text-4xl">🧪</span>
+        <span class="font-medium text-sm group-hover:text-white transition">Science</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-32 h-32 flex flex-col items-center justify-center gap-2 rounded-2xl border border-black/5 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group">
+        <span class="text-4xl">➗</span>
+        <span class="font-medium text-sm group-hover:text-white  transition">Maths</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-32 h-32 flex flex-col items-center justify-center gap-2 rounded-2xl border border-black/5 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group">
+        <span class="text-4xl">🌍</span>
+        <span class="font-medium text-sm group-hover:text-white  transition">GK</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-32 h-32 flex flex-col items-center justify-center gap-2 rounded-2xl border border-black/5 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group">
+        <span class="text-4xl">🏆</span>
+        <span class="font-medium text-sm group-hover:text-white  transition">Sports</span>
+        </button>
+      <button type="button" class="snap-start shrink-0 w-32 h-32 flex flex-col items-center justify-center gap-2 rounded-2xl border border-black/5 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group">
+        <span class="text-4xl">🥇</span>
+        <span class="font-medium text-sm group-hover:text-white  transition">Awards</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-32 h-32 flex flex-col items-center justify-center gap-2 rounded-2xl border border-black/5 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group">
+        <span class="text-4xl">⭐</span>
+        <span class="font-medium text-sm group-hover:text-white  transition">Influencers</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-32 h-32 flex flex-col items-center justify-center gap-2 rounded-2xl border border-black/5 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group">
+        <span class="text-4xl">🚩</span>
+        <span class="font-medium text-sm group-hover:text-white  transition">Flags</span>
+      </button>
+      <button type="button" class="snap-start shrink-0 w-32 h-32 flex flex-col items-center justify-center gap-2 rounded-2xl border border-black/5 hover:shadow-md hover:bg-[#0E7A48] hover:border-[#0E7A48] transition group">
+        <span class="text-4xl">💱</span>
+        <span class="font-medium text-sm group-hover:text-white  transition">Currencies</span>
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== Footer ===================== -->
+<footer class="mt-15 border-t border-[#E7EDE7] py-7">
+  <div class="max-w-7xl mx-auto px-6 sm:px-12 flex items-center justify-between gap-5 flex-wrap">
+    <div class="flex items-center gap-3">
+      <span class="w-7 h-7 rounded-xl shrink-0 bg-linear-to-br from-[#159A5B] to-[#0E7A48] flex items-center justify-center text-white" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
+      </span>
+      <div>
+        <p class="font-display font-bold text-sm">QuizNest</p>
+        <p class="text-[#62716A] text-xs mt-0.5">Learn something new, one quiz at a time.</p>
+      </div>
+    </div>
+    <nav class="flex gap-6">
+      <a href="#" class="text-[#62716A] text-xs font-medium hover:text-[#0E7A48] transition">Help Center</a>
+      <a href="#" class="text-[#62716A] text-xs font-medium hover:text-[#0E7A48] transition">Settings</a>
+      <a href="#" class="text-[#62716A] text-xs font-medium hover:text-[#0E7A48] transition">Privacy</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- ===================== Script ===================== -->
+<script>
+  const form = document.getElementById('joinForm');
+  const input = document.getElementById('quizCode');
+  const joinBtn = form.querySelector('button[type="submit"]');
+  const btnLabel = joinBtn.querySelector('.btn-label');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const value = input.value.trim();
+
+    if (!value) {
+      input.classList.add('ring-2', 'ring-[#F3B7B4]');
+      input.focus();
+      setTimeout(() => input.classList.remove('ring-2', 'ring-[#F3B7B4]'), 1400);
+      return;
+    }
+
+    joinBtn.disabled = true;
+    btnLabel.textContent = 'Joining…';
+    setTimeout(() => {
+      btnLabel.textContent = 'Join Quiz';
+      joinBtn.disabled = false;
+      input.value = '';
+    }, 900);
+  });
+
+  document.querySelectorAll('[data-scroll-controls]').forEach((controls) => {
+    const section = controls.closest('section');
+    const row = section.querySelector('[data-row]');
+    controls.querySelectorAll('button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const dir = parseInt(btn.dataset.dir, 10);
+        row.scrollBy({ left: dir * 320, behavior: 'smooth' });
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

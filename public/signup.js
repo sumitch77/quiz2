@@ -1,28 +1,18 @@
 let name1 = document.getElementById('name1');
-let phone = document.getElementById('phone');
 let email = document.getElementById('email');
 let password = document.getElementById('password');
 let confirmpass = document.getElementById('confirmpass');
-let code = document.getElementById('code');
-let sendcode = document.getElementById('sendcode');
-let verbtn = document.getElementById('verbtn');
 let signupbtn = document.getElementById('signup');
 
 let ername = document.querySelector('#username-error');
-let erphone = document.querySelector('#phone-error');
 let eremail = document.querySelector('#email-error');
 let erpass = document.querySelector('#pass-error');
 let erconpass = document.querySelector('#conpass-error');
-let ercode = document.querySelector('#code-error');
 
 let eyetoggle = document.querySelector('#eyetoggle');
 let eyetoggle2 = document.querySelector('#eyetoggle2');
-let message = document.getElementById('message');
-let message2 = document.getElementById('message2');
 let message3 = document.getElementById('message3');
 
-let newemail;
-let warn = document.querySelector('#warn');
 
 let mainlogin = document.querySelector('#mainlogin');
 let mainsignup = document.querySelector('#mainsignup');
@@ -45,7 +35,6 @@ Glogin.addEventListener('click' , (e)=>{
 window.location.href = '/auth/google';
 });
 
-// --- Fingerprint generation (moved from timer.js) ---
 let finalfingerprint;
 
 async function getAudioFingerprint() {
@@ -126,7 +115,6 @@ function fontTimingFingerprint() {
   }
 }
 
-// Expose a promise so verify logic can wait for fingerprint
 window.fingerprintReady = (async () => {
   try {
     const [canvasFp, audioFp] = await Promise.all([
@@ -152,7 +140,6 @@ window.fingerprintReady = (async () => {
   }
 })();
 
-// POST fingerprint when ready (or post 'notfound' after timeout)
 (async () => {
   try {
     const fp = await Promise.race([
@@ -352,166 +339,6 @@ finallogin.addEventListener('click',async(e)=>{
 });
 
 
- sendcode.addEventListener('click', async (event) => {
-
-  event.preventDefault(); 
-  lockButton(sendcode);
-   newemail= email.value;
-  try {
-    const response = await fetch('/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name1: name1.value, phone: phone.value, email: newemail, password: password.value, confirmpass: confirmpass.value })
-    });
-       if(response.status===429){
-        const data = await response.json();
-        message.innerText = data.message;
-        message.classList.remove('hidden');
-        message.classList.replace('text-green-600' , 'text-red-600');
-
-
-
-        setTimeout(()=>{
-
-          message.innerText="";
-         message.classList.add('hidden');
-        message.classList.replace( 'text-red-600' , 'text-green-600');
-
-
-        },5000)
-        return;
-    }
-    if(response.status===400){
-        const data = await response.json();
-        message.innerText = data.message;
-
-       message.classList.remove('hidden');
-        message.classList.replace('text-green-600' , 'text-red-600');
-
-
-         setTimeout(()=>{
-    message.innerText='';
-
-       message.classList.add('hidden');
-        message.classList.replace( 'text-red-600' , 'text-green-600');
-
-
-    },5000);
-        return;
-    }
-    const data = await response.json();
-    message.innerHTML =data.message;
-
-     message.classList.remove('hidden');
-        // message.classList.replace('text-green-600' , 'bg-red-600');
-
-        // warn.classList.replace('bg-red-600' , 'bg-green-600');
-     setTimeout(()=>{
-    message.innerText='';
-
-
-        message.classList.add('hidden');
-        // warn.classList.replace( 'text-green-500','text-red-500');
-
-    },5000);
-    if(data.success){
-           
-    sendcode.innerText='Resend';
-      
-    }
-   
-  } catch (err) {
-    message.innerText='Unable to connect to server';
-
-       message.classList.remove('hidden');
-        message.classList.replace('text-green-600' , 'text-red-600');
-
-
-        setTimeout(()=>{
-          message.innerText='';
-
-          message.classList.add('hidden');
-        message.classList.replace( 'text-red-600' , 'text-green-600');
-
-
-        },5000)
-  }
-});
-
-verbtn.addEventListener('click', async () => {
-  
-  lockButton(verbtn);
-   try {
-    const response = await fetch('/verify2', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name1: name1.value, phone: phone.value, code: code.value, email: email.value , password: password.value })
-    });
-       if(response.status===429){
-        const data = await response.json();
-        message2.innerText = data.message;
-       message2.classList.remove('hidden');
-        message2.classList.replace('text-green-600' , 'text-red-600');
-
-
-
-        setTimeout(()=>{
-
-          message2.innerText="";
-         message2.classList.add('hidden');
-        message2.classList.replace( 'text-red-600' , 'text-green-600');
-
-
-        },5000)
-       }
-    
-    if(response.status===400){
-        const data = await response.json();
-        message2.innerText = data.message;
-
-       message2.classList.remove('hidden');
-        message2.classList.replace('text-green-600' , 'text-red-600');
-
-
-         setTimeout(()=>{
-    message2.innerText='';
-
-       message2.classList.add('hidden');
-        message2.classList.replace( 'text-red-600' , 'text-green-600');
-
-
-    },5000);
-        return;
-    }
-    const data = await response.json();
-    message2.innerText = data.message;
-    if(!data.success){
-        message2.classList.replace('text-green-600' , 'text-red-600');
-    }
-     message2.classList.remove('hidden');
-     setTimeout(()=>{
-    message2.innerText='';
-        message2.classList.add('hidden');
-    },5000);
-    
-    } catch (err) {
-    message2.innerText='Unable to connect to server';
-
-       message2.classList.remove('hidden');
-        message2.classList.replace('text-green-600' , 'text-red-600');
-
-
-        setTimeout(()=>{
-          message2.innerText='';
-
-          message2.classList.add('hidden');
-        message2.classList.replace( 'text-red-600' , 'text-green-600');
-
-
-    },5000);
-  }
-});
-
 
 signupbtn.addEventListener('click', async (e) => {
     e.preventDefault();
@@ -538,7 +365,6 @@ if(!agreement.checked){
   const newemail = email.value;
     const payload = {
         name1: name1.value,
-        phone: phone.value,
         email: newemail,
         password: password.value,
         confirmpass: confirmpass.value,
@@ -629,9 +455,7 @@ if(!agreement.checked){
         message3.innerHTML = data.message + (data.link ? `<a href="${data.link}">${' ' + data.actionText}</a>` : '');
 
                  message3.classList.remove('hidden');
-        // message.classList.replace('text-green-600' , 'bg-red-600');
-
-        // warn.classList.replace('bg-red-600' , 'bg-green-600');
+  
      setTimeout(()=>{
     message3.innerText='';
 
@@ -643,11 +467,9 @@ if(!agreement.checked){
         if (data.success) {
               
             name1.value = '';
-            phone.value = '';
             email.value = '';
             password.value = '';
             confirmpass.value = '';
-            code.value = '';
             
             window.location.href = '/';
         }
@@ -725,29 +547,6 @@ name1.addEventListener('input' , (e)=>{
 
 });
 
-
-phone.addEventListener('input',(e)=>{
-    let currval = e.target.value;
-let flag = "true";
-
-    if(currval.length !=10 ) {flag = "false";}   
-
-   if(flag==="false"){
-    phone.classList.remove('border-[#262626]','focus:border-[#1967d3]');
-    phone.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-2', 'focus:ring-red-500/20');
-    erphone.innerText = "Phone number should be Valid";
-
-    erphone.classList.remove('opacity-0', '-translate-y-1' , 'hidden');
-    erphone.classList.add('opacity-100', 'translate-y-0');
-    }
-  else{
-        phone.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-2', 'focus:ring-red-500/20');
-    phone.classList.add('border-[#262626]', 'focus:border-[#1967d3]');
-    erphone.innerText="";
-    erphone.classList.remove('opacity-100', 'translate-y-0');
-    erphone.classList.add('opacity-0', '-translate-y-1', 'hidden');
-    }
-});
 
 
 email.addEventListener('input',(e)=>{
