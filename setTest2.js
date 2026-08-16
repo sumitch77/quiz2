@@ -14,6 +14,8 @@ const cors = require('cors');
 const passport = require('passport');
 const { User } = require('./routes/auth');
 
+const {supabase} = require('./routes/supabase');
+
 const session = require('express-session');
 const connectPgSimple  = require('connect-pg-simple');
 const pg  = require('pg');
@@ -76,7 +78,7 @@ passport.serializeUser((user, done) => {
 // 4. Fetch user from Supabase on subsequent requests
 passport.deserializeUser(async (id, done) => {
   const { data: user, error } = await supabase
-    .from('users')
+    .from('allusers')
     .select('*')
     .eq('id', id)
     .maybeSingle();
